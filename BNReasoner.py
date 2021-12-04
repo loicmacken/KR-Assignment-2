@@ -1,5 +1,6 @@
 from typing import Union
 from BayesNet import BayesNet
+import copy
 
 
 class BNReasoner:
@@ -17,6 +18,49 @@ class BNReasoner:
 
     # TODO: This is where your methods should go
 
+    @staticmethod
+    def get_leave_nodes(net: BayesNet) -> list[str]:
+        vars: set[str] = set(net.get_all_variables())
+
+        for node, _ in net.structure.edges:
+            vars.remove(node)
+        
+        return list(vars)
+
+    @staticmethod
+    def get_root_nodes(net: BayesNet) -> list[str]:
+        vars: set[str] = set(net.get_all_variables())
+
+        for _, node in net.structure.edges:
+            vars.remove(node)
+
+        return list(vars)
+
+    @staticmethod
+    def get_node_parents(net: BayesNet, W: str) -> list[str]:
+        parents: list[str] = []
+        for parent, child in net.structure.edges:
+            if child == W:
+                parents.append(parent)
+
+        return parents
+
+    @staticmethod
+    def get_paths(X: list[str], Y: list[str]) -> list[list[tuple[str, str]]]:
+        pass
+
+    @staticmethod
+    def get_valve_type(net: BayesNet, W: str) -> str:
+        parents: list[str] = BNReasoner.get_node_parents(net, W)
+        if len(parents) > 1:
+            return 'con'
+        
+        children: list[str] = net.get_children(W)
+        if len(children) > 1:
+            return 'div'
+
+        return 'seq'
+
     def d_sep(self, X: list[str], Y: list[str], Z: list[str]) -> bool:
         """
         Gets the d-seperation given the three lists of variables: X, Y and Z,
@@ -28,6 +72,36 @@ class BNReasoner:
 
         :return: dsep(X, Y, Z)
         """
+        X_set = set(X)
+        Y_set = set(Y)
+        Z_set = set(Z)
+        XYZ_set = X_set.union(Y_set, Z_set)
+
+        temp_bn: BayesNet = copy.deepcopy(self.bn)
+
+        temp_bn.draw_structure()
+
+        # delete leaf nodes W not part of X U Y U Z
+        while(True):
+            leaves: set[str] = set(BNReasoner.get_leave_nodes(temp_bn))
+            leaves_to_delete = leaves - XYZ_set
+
+            if not leaves_to_delete: break
+
+            for leaf in leaves_to_delete:
+                temp_bn.del_var(leaf)
+
+        temp_bn.draw_structure()
+
+        # delete all edges outgoing from Z
+        for var in Z:
+            for child in temp_bn.get_children(var):
+                temp_bn.del_edge((var, child))
+
+        temp_bn.draw_structure()
+
+        roots: list[str] = BNReasoner.get_root_nodes(temp_bn)
+
         raise ValueError
 
     def ordering_min_degree(self, X: list[str]) -> list[str]:
@@ -76,7 +150,7 @@ class BNReasoner:
         """
         raise ValueError
 
-    def map_and_mep(self, Q: list[str], e: list[tuple[str, bool]]): # TODO: add types
+    def map_and_mpe(self, Q: list[str], e: list[tuple[str, bool]]): # TODO: add types
         """
         Computes the most likely instantiations of Q
         given possibly empty set of query variables Q and an evidence e
@@ -90,4 +164,7 @@ class BNReasoner:
 
 
 if __name__ =='__main__':
-    pass
+    dog_problem = BayesNet()
+    dog_problem.load_from_bifxml("testing\\dog_problem.BIFXML")
+    dog_reasoner = BNReasoner(dog_problem)
+    dog_reasoner.d_sep(['family-out'], ['hear-bark'], ['dog-out'])
