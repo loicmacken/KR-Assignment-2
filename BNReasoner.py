@@ -1,5 +1,6 @@
 from typing import Union
 from BayesNet import BayesNet
+import networkx as nx
 import copy
 
 
@@ -19,29 +20,31 @@ class BNReasoner:
     # TODO: This is where your methods should go
 
     @staticmethod
-    def get_leave_nodes(net: BayesNet) -> list[str]:
-        vars: set[str] = set(net.get_all_variables())
+    def get_leaf_nodes(net: BayesNet) -> set[str]:
+        vars = set(net.get_all_variables())
 
         for node, _ in net.structure.edges:
-            vars.remove(node)
+            if node in vars:
+                vars.remove(node)
         
-        return list(vars)
+        return vars
 
     @staticmethod
-    def get_root_nodes(net: BayesNet) -> list[str]:
+    def get_root_nodes(net: BayesNet) -> set[str]:
         vars: set[str] = set(net.get_all_variables())
 
         for _, node in net.structure.edges:
-            vars.remove(node)
+            if node in vars:
+                vars.remove(node)
 
-        return list(vars)
+        return vars
 
     @staticmethod
-    def get_node_parents(net: BayesNet, W: str) -> list[str]:
-        parents: list[str] = []
+    def get_node_parents(net: BayesNet, W: str) -> set[str]:
+        parents: set[str] = set()
         for parent, child in net.structure.edges:
             if child == W:
-                parents.append(parent)
+                parents.add(parent)
 
         return parents
 
@@ -51,15 +54,58 @@ class BNReasoner:
 
     @staticmethod
     def get_valve_type(net: BayesNet, W: str) -> str:
-        parents: list[str] = BNReasoner.get_node_parents(net, W)
+        parents: set[str] = BNReasoner.get_node_parents(net, W)
         if len(parents) > 1:
             return 'con'
         
-        children: list[str] = net.get_children(W)
+        children: set[str] = set(net.get_children(W))
         if len(children) > 1:
             return 'div'
 
         return 'seq'
+
+    @staticmethod
+    def reachable_nodes(net: BayesNet, X: set[str], Z: set[str]) -> set[str]:
+        """
+        
+        """
+        # Phase I: insert all ancestors of Z into A
+
+        L = Z       # nodes to be visited
+        A = set()   # ancestors of Z
+        while L:
+            Y = next(iter(A))
+            L = L - {Y}
+            if Y not in A:
+                L = L | BNReasoner.get_node_parents(net, Y) # Y's parents need to be visited
+            A = A | {Y} # Y is ancestor of evidence
+        
+        # Phase II: traverse active trails starting from X
+        # net.structure.
+
+    @staticmethod
+    def is_connected(net: BayesNet, X: set[str], Y: set[str]) -> bool:
+        visited = set()
+        for var in X:
+            # while(True):
+                # edges = BNReasoner.get_node_parents(net, var) | set(net.get_children(var))
+            if BNReasoner._get_connections(net, var, Y, visited):
+                return True
+        return False
+
+    @staticmethod
+    def _get_connections(net: BayesNet, var: str, Y: set[str], visited: set[str]) -> bool:
+        if var in Y: return True
+
+        visited.add(var)
+        edges = BNReasoner.get_node_parents(net, var) | set(net.get_children(var)) - visited
+
+        for edge in edges:
+            return BNReasoner._get_connections(net, edge, Y, visited)
+        return False
+
+
+
 
     def d_sep(self, X: list[str], Y: list[str], Z: list[str]) -> bool:
         """
@@ -75,7 +121,7 @@ class BNReasoner:
         X_set = set(X)
         Y_set = set(Y)
         Z_set = set(Z)
-        XYZ_set = X_set.union(Y_set, Z_set)
+        XYZ_set = X_set | Y_set | Z_set
 
         temp_bn: BayesNet = copy.deepcopy(self.bn)
 
@@ -83,13 +129,16 @@ class BNReasoner:
 
         # delete leaf nodes W not part of X U Y U Z
         while(True):
-            leaves: set[str] = set(BNReasoner.get_leave_nodes(temp_bn))
+            leaves: set[str] = set(BNReasoner.get_leaf_nodes(temp_bn))
             leaves_to_delete = leaves - XYZ_set
 
-            if not leaves_to_delete: break
+            if not leaves_to_delete: 
+                break
 
             for leaf in leaves_to_delete:
                 temp_bn.del_var(leaf)
+
+        leaves: set[str] = set(BNReasoner.get_leaf_nodes(temp_bn))
 
         temp_bn.draw_structure()
 
@@ -100,9 +149,30 @@ class BNReasoner:
 
         temp_bn.draw_structure()
 
-        roots: list[str] = BNReasoner.get_root_nodes(temp_bn)
+        # moralize
+        for var in temp_bn.get_all_variables():
+            parents = list(BNReasoner.get_node_parents(temp_bn, var))
+            if len(parents) > 1:
+                for i in range(len(parents) - 1):
+                    temp_bn.add_edge((parents[i], parents[i+1]))
 
-        raise ValueError
+        temp_bn.draw_structure()
+
+        # remove givens
+        for var in Z:
+            for parent in BNReasoner.get_node_parents(temp_bn, var):
+                temp_bn.del_edge((parent, var))
+            temp_bn.del_var(var)
+
+        temp_bn.draw_structure()
+
+        return not BNReasoner.is_connected(temp_bn, X_set, Y_set)
+
+        # nx.path_graph()
+
+        # roots: set[str] = BNReasoner.get_root_nodes(temp_bn)
+
+        # raise ValueError
 
     def ordering_min_degree(self, X: list[str]) -> list[str]:
         """
@@ -167,4 +237,4 @@ if __name__ =='__main__':
     dog_problem = BayesNet()
     dog_problem.load_from_bifxml("testing\\dog_problem.BIFXML")
     dog_reasoner = BNReasoner(dog_problem)
-    dog_reasoner.d_sep(['family-out'], ['hear-bark'], ['dog-out'])
+    print(dog_reasoner.d_sep(['family-out'], ['hear-bark'], ['dog-out']))
