@@ -422,3 +422,32 @@ class BayesNet:
                 cpt = self.get_compatible_instantiations_table(pd.Series(e), cpt)
                 self.update_cpt(child, cpt)
 
+    def marginal_dist(self, Q: List[str], pi: List[str], e: List[tuple[str, bool]]): # TODO: add types
+        """
+        Computes the marginal distribution P(Q|e)
+        given the query variables Q and possibly empty evidence e
+
+        :param Q: query variables
+        :param pi: ordering of network variables not in Q
+        :param e: evidence
+
+        :return: TODO
+        """
+        cpts = self.get_all_cpts()
+        for c in cpts:
+            print(cpts)
+
+        # update CTPs based on evidence, if it's not empty
+        if e:
+            for var in pi:
+                cpt = self.get_cpt(var)
+                cpt = self.get_compatible_instantiations_table(pd.Series(e), cpt)
+                self.update_cpt(var, cpt)
+
+        cpts = self.get_all_cpts()
+        for c in cpts:
+            print(cpts)
+
+        
+            
+

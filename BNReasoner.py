@@ -229,25 +229,28 @@ class BNReasoner:
 
         temp_bn.net_prune(set(Q), e)                    # type: ignore
 
-    def marginal_dist(self, Q: List[str], e: List[tuple[str, bool]]): # TODO: add types
+    def marginal_dist(self, Q: List[str], pi: List[str], e: List[tuple[str, bool]]): # TODO: add types
         """
         Computes the marginal distribution P(Q|e)
         given the query variables Q and possibly empty evidence e
 
         :param Q: query variables
+        :param pi: ordering of network variables not in Q
         :param e: evidence
 
         :return: TODO
         """
-        raise ValueError
+        temp_bn = copy.deepcopy(self.bn)
 
-    def map_and_mpe(self, Q: List[str], e: List[tuple[str, bool]]): # TODO: add types
+        temp_bn.marginal_dist(Q, pi, e)                 # type: ignore
+
+    def map_and_mpe(self, Q: List[str], R: List[tuple[str, bool]]): # TODO: add types
         """
         Computes the most likely instantiations of Q
-        given possibly empty set of query variables Q and an evidence e
+        given possibly empty set of query variables Q and an evidence E
 
         :param Q: query variables
-        :param e: evidence
+        :param E: evidence
 
         :return: TODO
         """
@@ -260,4 +263,5 @@ if __name__ =='__main__':
     print(dog_problem.ordering_min_degree(['family-out', 'hear-bark', 'dog-out']))
     print(dog_problem.ordering_min_fill(['family-out', 'hear-bark', 'dog-out']))
     dog_problem.network_prune(['family-out', 'hear-bark', 'dog-out'],[('light-out', True)])
-    
+    dog_problem.marginal_dist([], [], [])
+
