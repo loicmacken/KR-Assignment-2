@@ -288,6 +288,17 @@ class BayesNet:
             return self._get_connections(edge, Y, visited)
         return False
 
+    def prune_leaves(self, vars: Set[str]) -> None:
+        while(True):
+            leaves: Set[str] = set(self.get_leaf_nodes())
+            leaves_to_delete = leaves - vars
+
+            if not leaves_to_delete:
+                return
+
+            for leaf in leaves_to_delete:
+                self.del_var(leaf)
+
     def d_sep(self, X: Set[str], Y: Set[str], Z: Set[str]) -> bool:
         """
         Gets the d-seperation given the three sets of variables: X, Y and Z,
@@ -302,15 +313,7 @@ class BayesNet:
         XYZ: Set[str] = X | Y | Z
 
         # delete leaf nodes W not part of X U Y U Z
-        while(True):
-            leaves: Set[str] = set(self.get_leaf_nodes())
-            leaves_to_delete = leaves - XYZ
-
-            if not leaves_to_delete:
-                break
-
-            for leaf in leaves_to_delete:
-                self.del_var(leaf)
+        self.prune_leaves(XYZ)
 
         # delete all edges outgoing from Z
         for var in Z:
@@ -332,3 +335,90 @@ class BayesNet:
 
         # d-seperated if X and Y are NOT connected
         return not self.is_connected(X, Y)
+
+    def min_degree(self, X: List[str]) -> List[str]:
+        """
+        """
+        G = self.get_interaction_graph()
+        pi = []
+
+        for i in range(len(X)):
+            var = ''
+            min_val = 1000
+            for n, nbrdict in G.adjacency():
+                if len(nbrdict) < min_val:
+                    var = n
+
+            neighbors = list(G.neighbors(var))
+            for node in neighbors:
+                for neighbor in neighbors:
+                    if node == neighbor:
+                        continue
+                    if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
+                        G.add_edge(node, neighbor)
+
+            pi.append(var)
+
+            G.remove_node(var)
+            X.remove(var)
+
+        return pi
+
+    def min_fill(self, X: List[str]) -> List[str]:
+        """
+        """
+        G = self.get_interaction_graph()
+        pi = []
+
+        for i in range(len(X)):
+            min_var = ''
+            min_edges = 1000
+            for var in X:
+                edges = 0
+                neighbors = list(G.neighbors(var))
+                for node in neighbors:
+                    for neighbor in neighbors:
+                        if node == neighbor:
+                            continue
+                        if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
+                            edges += 1
+                if edges < min_edges:
+                    min_var = var
+                    min_edges = edges
+
+            neighbors = list(G.neighbors(min_var))
+            for node in neighbors:
+                for neighbor in neighbors:
+                    if node == neighbor:
+                        continue
+                    if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
+                        G.add_edge(node, neighbor)
+
+            pi.append(min_var)
+
+            G.remove_node(min_var)
+            X.remove(min_var)
+
+        return pi
+                
+    def net_prune(self, Q: Set[str], e: List[tuple[str, bool]]) -> None:
+        """
+        Node- and edgeprunes the network self.bn
+        Based on query variables Q and evidence e
+
+        :param Q: set of query variables
+        :param e: list of evidence
+        """
+        E = set([var for var, _ in e])
+        QE = Q | E
+
+        # first prune the leaves not in Q U E
+        self.prune_leaves(QE)
+
+        # then prune edges outgoing from E
+        for parent, child in self.get_all_edges():
+            if parent in E:
+                cpt = self.get_cpt(child)
+                cpt = self.get_compatible_instantiations_table(pd.Series(e), cpt)
+                self.update_cpt(child, cpt)
+

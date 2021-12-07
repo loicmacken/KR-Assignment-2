@@ -175,7 +175,7 @@ class BNReasoner:
     #     # raise ValueError
 
     
-    def d_sep(self, X: List[str], Y: List[str], Z: List[str]) -> bool:
+    def d_seperation(self, X: List[str], Y: List[str], Z: List[str]) -> bool:
         """
         Gets the d-seperation given the three lists of variables: X, Y and Z,
         i.e. returns true if X is independent of Y given Z in the self.bn
@@ -189,7 +189,7 @@ class BNReasoner:
 
         temp_bn = copy.deepcopy(self.bn)
 
-        return temp_bn.d_sep(set(X), set(Y), set(Z))       # type: ignore
+        return temp_bn.d_sep(set(X), set(Y), set(Z))    # type: ignore
 
     def ordering_min_degree(self, X: List[str]) -> List[str]:
         """
@@ -200,7 +200,9 @@ class BNReasoner:
 
         :return: an ordering PI of variables X
         """
-        raise ValueError
+        temp_bn = copy.deepcopy(self.bn)
+
+        return temp_bn.min_degree(X)                    # type: ignore
 
     def ordering_min_fill(self, X: List[str]) -> List[str]:
         """
@@ -211,19 +213,21 @@ class BNReasoner:
 
         :return: an ordering PI of variables X
         """
-        raise ValueError
+        temp_bn = copy.deepcopy(self.bn)
 
-    def network_prune(self, Q: List[str], e: List[tuple[str, bool]]) -> bool:
+        return temp_bn.min_fill(X)                      # type: ignore
+
+    def network_prune(self, Q: List[str], e: List[tuple[str, bool]]) -> None:
         """
         Node- and edgeprunes the network self.bn
         Based on query variables Q and evidence e
 
         :param Q: query variables
         :param e: evidence
-
-        :return: is successful
         """
-        raise ValueError
+        temp_bn = copy.deepcopy(self.bn)
+
+        temp_bn.net_prune(set(Q), e)                    # type: ignore
 
     def marginal_dist(self, Q: List[str], e: List[tuple[str, bool]]): # TODO: add types
         """
@@ -252,4 +256,8 @@ class BNReasoner:
 
 if __name__ =='__main__':
     dog_problem = BNReasoner("testing\\dog_problem.BIFXML")
-    print(dog_problem.d_sep(['family-out'], ['hear-bark'], ['dog-out']))
+    print(dog_problem.d_seperation(['family-out'], ['hear-bark'], ['dog-out']))
+    print(dog_problem.ordering_min_degree(['family-out', 'hear-bark', 'dog-out']))
+    print(dog_problem.ordering_min_fill(['family-out', 'hear-bark', 'dog-out']))
+    dog_problem.network_prune(['family-out', 'hear-bark', 'dog-out'],[('light-out', True)])
+    
