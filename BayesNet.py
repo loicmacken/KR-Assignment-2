@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Set
 import networkx as nx
 import matplotlib.pyplot as plt
 from pgmpy.readwrite import XMLBIFReader
@@ -226,3 +226,109 @@ class BayesNet:
         :param edge: Edge to be deleted (e.g. ('A', 'B')).
         """
         self.structure.remove_edge(edge[0], edge[1])
+
+    # ADDED FUNCTIONS -----------------------------------
+
+    def get_all_edges(self) -> List[Tuple[str, str]]:
+        """
+        """
+        return [e for e in self.structure.edges]
+
+    def get_leaf_nodes(self) -> List[str]:
+        """
+        """
+        vars: Set[str] = set(self.get_all_variables())
+
+        for node, _ in self.get_all_edges():
+            if node in vars:
+                vars.remove(node)
+
+        return list(vars)
+
+    def get_root_nodes(self) -> List[str]:
+        """
+        """
+        vars: Set[str] = set(self.get_all_variables())
+
+        for _, node in self.get_all_edges():
+            if node in vars:
+                vars.remove(node)
+
+        return list(vars)
+
+    def get_node_parents(self, W: str) -> List[str]:
+        """
+        """
+        parents: Set[str] = set()
+        for parent, child in self.get_all_edges():
+            if child == W:
+                parents.add(parent)
+
+        return list(parents)
+
+    def is_connected(self, X: Set[str], Y: Set[str]) -> bool:
+        """
+        """
+        visited: Set[str] = set()
+
+        for var in X:
+            if self._get_connections(var, Y, visited):
+                return True
+        return False
+
+    def _get_connections(self, var: str, Y: Set[str], visited: Set[str]) -> bool:
+        """
+        """
+        if var in Y: return True
+        
+        visited.add(var)
+        edges: Set[str] = set(self.get_node_parents(var)) | set(self.get_children(var)) - visited
+
+        for edge in edges:
+            return self._get_connections(edge, Y, visited)
+        return False
+
+    def d_sep(self, X: Set[str], Y: Set[str], Z: Set[str]) -> bool:
+        """
+        Gets the d-seperation given the three sets of variables: X, Y and Z,
+        i.e. returns true if X is independent of Y given Z in the self.bn
+
+        :param X: variable set X
+        :param Y: variable set Y
+        :param Z: variable set Z
+
+        :return: dsep(X, Y, Z)
+        """
+        XYZ: Set[str] = X | Y | Z
+
+        # delete leaf nodes W not part of X U Y U Z
+        while(True):
+            leaves: Set[str] = set(self.get_leaf_nodes())
+            leaves_to_delete = leaves - XYZ
+
+            if not leaves_to_delete:
+                break
+
+            for leaf in leaves_to_delete:
+                self.del_var(leaf)
+
+        # delete all edges outgoing from Z
+        for var in Z:
+            for child in self.get_children(var):
+                self.del_edge((var, child))
+
+        # moralize by marrying parents (making an edge between them)
+        for var in self.get_all_variables():
+            parents = self.get_node_parents(var)
+            if len(parents) > 1:
+                for i in range(len(parents) - 1):
+                    self.add_edge((parents[i], parents[i+1]))
+        
+        # remove givens: delete all edges and nodes of Z
+        for var in Z:
+            for parent in self.get_node_parents(var):
+                self.del_edge((parent, var))
+            self.del_var(var)
+
+        # d-seperated if X and Y are NOT connected
+        return not self.is_connected(X, Y)
