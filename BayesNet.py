@@ -229,6 +229,13 @@ class BayesNet:
 
     # ADDED FUNCTIONS -----------------------------------
 
+    def draw_graph(self, graph: nx.DiGraph) -> None:
+        """
+        Visualize structure of the BN.
+        """
+        nx.draw(graph, with_labels=True, node_size=3000)
+        plt.show()
+
     def get_all_edges(self) -> List[Tuple[str, str]]:
         """
         """
