@@ -327,6 +327,7 @@ class BayesNet:
             for child in self.get_children(var):
                 self.del_edge((var, child))
 
+        # TODO remove creating edges between parents and Z removal
         # moralize by marrying parents (making an edge between them)
         for var in self.get_all_variables():
             parents = self.get_node_parents(var)
@@ -352,13 +353,18 @@ class BayesNet:
         for i in range(len(X)):
             var = ''
             min_val = 1000
+
+            # find variable in X with smallest number of neighbors in G
             for n, nbrdict in G.adjacency():
                 if len(nbrdict) < min_val:
                     var = n
+                    # TODO you should also add this min_val = len(nbrdict)
 
+            # add an edge between every pair of non-adjacent neighbors of pi in G
             neighbors = list(G.neighbors(var))
             for node in neighbors:
                 for neighbor in neighbors:
+                    print(neighbor)
                     if node == neighbor:
                         continue
                     if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
@@ -366,7 +372,9 @@ class BayesNet:
 
             pi.append(var)
 
+            # delete variable pi from G and from X
             G.remove_node(var)
+            # TODO iterate in a copy of parameter X or in the reversed X, removing while iterating -> skips variables (3 instead of 5 loops)
             X.remove(var)
 
         return pi

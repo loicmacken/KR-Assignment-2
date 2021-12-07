@@ -196,7 +196,7 @@ class BNReasoner:
         Gets the ordering of the variable list X
         based on min-degree heuristics
 
-        :param X: variable list X
+        :param X: variables in network N
 
         :return: an ordering PI of variables X
         """
@@ -260,8 +260,16 @@ class BNReasoner:
 if __name__ =='__main__':
     dog_problem = BNReasoner("testing\\dog_problem.BIFXML")
     print(dog_problem.d_seperation(['family-out'], ['hear-bark'], ['dog-out']))
+    # TODO use get_all_variables func as input
     print(dog_problem.ordering_min_degree(['family-out', 'hear-bark', 'dog-out']))
     print(dog_problem.ordering_min_fill(['family-out', 'hear-bark', 'dog-out']))
     dog_problem.network_prune(['family-out', 'hear-bark', 'dog-out'],[('light-out', True)])
     dog_problem.marginal_dist([], [], [])
 
+    # create graphs
+    # bn = BayesNet()
+    # bn.load_from_bifxml("testing\\dog_problem.BIFXML")
+    # interaction_graph = bn.get_interaction_graph()
+    # bn.draw_structure()
+    # bn.draw_graph(interaction_graph)
+    # print(nx.d_separated(bn.structure, {'family-out'}, {'hear-bark'}, {'dog-out'}))
