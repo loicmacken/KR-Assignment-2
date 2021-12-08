@@ -358,7 +358,7 @@ class BayesNet:
             for n, nbrdict in G.adjacency():
                 if len(nbrdict) < min_val:
                     var = n
-                    # TODO you should also add this min_val = len(nbrdict)
+                    min_val = len(nbrdict)
 
             # add an edge between every pair of non-adjacent neighbors of pi in G
             neighbors = list(G.neighbors(var))
@@ -375,7 +375,7 @@ class BayesNet:
             # delete variable pi from G and from X
             G.remove_node(var)
             # TODO iterate in a copy of parameter X or in the reversed X, removing while iterating -> skips variables (3 instead of 5 loops)
-            X.remove(var)
+            # X.remove(var)
 
         return pi
 
@@ -448,9 +448,9 @@ class BayesNet:
 
         :return: TODO
         """
-        cpts = self.get_all_cpts()
-        for c in cpts:
-            print(cpts)
+        # cpts = self.get_all_cpts()
+        # for c in cpts:
+        #     print(cpts)
 
         # update CTPs based on evidence, if it's not empty
         if e:
@@ -459,9 +459,13 @@ class BayesNet:
                 cpt = self.get_compatible_instantiations_table(pd.Series(e), cpt)
                 self.update_cpt(var, cpt)
 
-        cpts = self.get_all_cpts()
-        for c in cpts:
-            print(cpts)
+        # cpts = self.get_all_cpts()
+        # for c in cpts:
+        #     print(cpts)
+        for var in pi:
+            cpt = self.get_cpt(var)
+            # TODO multiplication of factors
+        # TODO summing out of factors
 
         
             
