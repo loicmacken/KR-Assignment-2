@@ -435,15 +435,18 @@ class BayesNet:
         E = set([var for var, _ in e])
         QE = Q | E
 
+        evidence = dict(e)
+
         # first prune the leaves not in Q U E
         self.prune_leaves(QE)
 
         # then prune edges outgoing from E
         for parent, child in self.get_all_edges():
             if parent in E:
+                instantiation = pd.Series({parent: evidence[parent]})
                 cpt = self.get_cpt(child)
-                cpt = self.get_compatible_instantiations_table(pd.Series(e), cpt)
-                self.update_cpt(child, cpt)
+                new_cpt = self.get_compatible_instantiations_table(instantiation, cpt)
+                self.update_cpt(child, new_cpt)
 
     def sum_out(self, cpt: pd.DataFrame, y: str) -> pd.DataFrame:
         """
