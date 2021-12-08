@@ -191,7 +191,7 @@ class BNReasoner:
 
         return temp_bn.d_sep(set(X), set(Y), set(Z))    # type: ignore
 
-    def ordering_min_degree(self, X: List[str]) -> List[str]:
+    def ordering_min_degree(self) -> List[str]:
         """
         Gets the ordering of the variable list X
         based on min-degree heuristics
@@ -202,9 +202,9 @@ class BNReasoner:
         """
         temp_bn = copy.deepcopy(self.bn)
 
-        return temp_bn.min_degree(X)                    # type: ignore
+        return temp_bn.min_degree()                    # type: ignore
 
-    def ordering_min_fill(self, X: List[str]) -> List[str]:
+    def ordering_min_fill(self) -> List[str]:
         """
         Gets the ordering of the variable list X
         based on min-degree heuristics
@@ -215,7 +215,7 @@ class BNReasoner:
         """
         temp_bn = copy.deepcopy(self.bn)
 
-        return temp_bn.min_fill(X)                      # type: ignore
+        return temp_bn.min_fill()                      # type: ignore
 
     def network_prune(self, Q: List[str], e: List[tuple[str, bool]]) -> None:
         """
@@ -242,6 +242,8 @@ class BNReasoner:
         """
         temp_bn = copy.deepcopy(self.bn)
 
+        temp_bn.sum_out(Q[0], Q[1])                     # type: ignore
+
         temp_bn.marginal_dist(Q, pi, e)                 # type: ignore
 
     def map_and_mpe(self, Q: List[str], R: List[tuple[str, bool]]): # TODO: add types
@@ -261,10 +263,12 @@ if __name__ =='__main__':
     dog_problem = BNReasoner("testing\\dog_problem.BIFXML")
     print(dog_problem.d_seperation(['family-out'], ['hear-bark'], ['dog-out']))
     # TODO use get_all_variables func as input
-    print(dog_problem.ordering_min_degree(['family-out', 'hear-bark', 'dog-out']))
-    print(dog_problem.ordering_min_fill(['family-out', 'hear-bark', 'dog-out']))
+    # print(dog_problem.ordering_min_degree(['family-out', 'hear-bark', 'dog-out']))
+    # print(dog_problem.ordering_min_fill(['family-out', 'hear-bark', 'dog-out']))
+    print(dog_problem.ordering_min_degree())
+    print(dog_problem.ordering_min_fill())
     dog_problem.network_prune(['family-out', 'hear-bark', 'dog-out'],[('light-out', True)])
-    dog_problem.marginal_dist([], [], [])
+    dog_problem.marginal_dist(['dog-out', 'family-out'], [], [])
 
     # create graphs
     # bn = BayesNet()
