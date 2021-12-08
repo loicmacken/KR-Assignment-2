@@ -229,7 +229,7 @@ class BayesNet:
 
     # ADDED FUNCTIONS -----------------------------------
 
-    def draw_graph(self, graph: nx.DiGraph) -> None:
+    def draw_graph(self, graph: nx.Graph) -> None:
         """
         Visualize structure of the BN.
         """
@@ -375,7 +375,6 @@ class BayesNet:
                         continue
                     if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
                         G.add_edge(node, neighbor)
-            print(var)
 
             pi.append(var)
 
@@ -394,33 +393,34 @@ class BayesNet:
 
         len_X = len(X)
         for i in range(len_X):
-            min_var = ''
+            min_var = ['', []]
             min_edges = 1000
+
+            # find variable in X with smallest number of added edges in G
             for var in X:
-                edges = 0
+                edges = []
                 neighbors = list(G.neighbors(var))
+
                 for node in neighbors:
                     for neighbor in neighbors:
-                        if node == neighbor:
+                        if node == neighbor or [neighbor, node] in edges:
                             continue
                         if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
-                            edges += 1
-                if edges < min_edges:
-                    min_var = var
-                    min_edges = edges
+                            edges.append([node, neighbor])
 
-            neighbors = list(G.neighbors(min_var))
-            for node in neighbors:
-                for neighbor in neighbors:
-                    if node == neighbor:
-                        continue
-                    if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
-                        G.add_edge(node, neighbor)
+                if len(edges) < min_edges:
+                    min_var = [var, edges]
+                    min_edges = len(edges)
+            
+            # add an edge between every pair of non-adjacent neighbors of pi in G
+            for node, neighbor in min_var[1]:
+                G.add_edge(node, neighbor)
 
-            pi.append(min_var)
+            pi.append(min_var[0])
 
-            G.remove_node(min_var)
-            X.remove(min_var)
+            # delete variable pi from G and from X
+            G.remove_node(min_var[0])
+            X.remove(min_var[0])
 
         return pi
                 
