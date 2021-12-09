@@ -241,8 +241,8 @@ class BNReasoner:
         :return: TODO
         """
         temp_bn = copy.deepcopy(self.bn)
-
-        temp_bn.sum_out(Q[0], Q[1])                     # type: ignore
+        cpt = temp_bn.get_cpt(Q[0])
+        temp_bn.sum_out(cpt, Q[1])                     # type: ignore
 
         temp_bn.marginal_dist(Q, pi, e)                 # type: ignore
 
@@ -268,7 +268,7 @@ if __name__ =='__main__':
     print(dog_problem.ordering_min_degree())
     print(dog_problem.ordering_min_fill())
     dog_problem.network_prune(['family-out', 'hear-bark', 'dog-out'],[('light-out', True)])
-    dog_problem.marginal_dist(['dog-out', 'family-out'], [], [])
+    dog_problem.marginal_dist(['dog-out', 'bowel-problem'], [], [])
 
     # create graphs
     # bn = BayesNet()
