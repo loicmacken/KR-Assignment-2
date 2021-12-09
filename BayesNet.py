@@ -449,26 +449,27 @@ class BayesNet:
         """
         """
         print(cpt)
+
         if y not in cpt.columns:
             return cpt
 
         series_true = pd.Series(index=[y], data=[True])
         cpt_true = self.get_compatible_instantiations_table(series_true, cpt)
+
         print(cpt_true)
 
         series_false = pd.Series(index=[y], data=[False])
         cpt_false = self.get_compatible_instantiations_table(series_false, cpt)
+
         print(cpt_false)
 
         cpt_out = cpt_true.copy().drop(columns=[y])
 
-        # print(cpt_true['p'])
-        # print(cpt_false['p'])
-        # print(cpt_true['p'] + cpt_false['p'])
         sum_cols = cpt_true['p'] + cpt_false['p']
-        cpt_out['p'] = sum_cols / 2
+        cpt_out['p'] = sum_cols
 
         print(cpt_out)
+        
         return cpt_out
 
     def mult(self, cpt: pd.DataFrame) -> pd.DataFrame:
