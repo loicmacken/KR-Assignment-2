@@ -1,5 +1,6 @@
 from typing import Union, List, Tuple, Dict, Set
 from BayesNet import BayesNet
+import pandas as pd
 import networkx as nx
 import copy
 
@@ -227,9 +228,9 @@ class BNReasoner:
         """
         temp_bn = copy.deepcopy(self.bn)
 
-        temp_bn.net_prune(set(Q), e)                    # type: ignore
+        return temp_bn.net_prune(set(Q), e)                    # type: ignore
 
-    def marginal_dist(self, Q: List[str], e: List[tuple[str, bool] or None], pi: List[str]): # TODO: add types
+    def marginal_dist(self, Q: List[str], e: List[tuple[str, bool] or None], pi: List[str]) -> pd.DataFrame:
         """
         Computes the marginal distribution P(Q|e)
         given the query variables Q and possibly empty evidence e
@@ -241,15 +242,8 @@ class BNReasoner:
         :return: TODO
         """
         temp_bn = copy.deepcopy(self.bn)
-        
-        # cpt = temp_bn.get_cpt(Q[0])
-        # cpt_1 = temp_bn.get_cpt(Q[2])
-        # cpt_2 = temp_bn.get_cpt(Q[1])
-        # temp_bn.sum_out(cpt, set([Q[1]]))                     # type: ignore
-        # l = [cpt, cpt_2, cpt_1]
-        # temp_bn.mult_factors(l)
 
-        temp_bn.marginal_dist(Q, e, pi)                 # type: ignore
+        return temp_bn.marginal_distrib(Q, e, pi)
 
     def map_and_mpe(self, Q: List[str], R: List[tuple[str, bool]]): # TODO: add types
         """
@@ -265,12 +259,13 @@ class BNReasoner:
 
 
 if __name__ =='__main__':
-    dog_problem = BNReasoner("testing\\dog_problem.BIFXML")
+    lecture_Example = BNReasoner("testing/lecture_Example.BIFXML")
+    dog_problem = BNReasoner("testing/dog_problem.BIFXML")
     print(dog_problem.d_seperation(['family-out'], ['hear-bark'], ['dog-out']))
     print(dog_problem.ordering_min_degree())
     print(dog_problem.ordering_min_fill())
     dog_problem.network_prune(['family-out'],[('dog-out', True), ('hear-bark', False)])
-    dog_problem.marginal_dist(['dog-out', 'family-out', 'hear-bark'], [], [])
+    print(lecture_Example.marginal_dist(['Slippery Road?',  'Wet Grass?'], [('Winter?', True), ('Sprinkler?', False)], ['Winter?', 'Rain?', 'Sprinkler?']))
 
     # create graphs
     # bn = BayesNet()

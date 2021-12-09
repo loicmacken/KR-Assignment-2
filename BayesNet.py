@@ -310,6 +310,37 @@ class BayesNet:
             for leaf in leaves_to_delete:
                 self.del_var(leaf)
 
+    def get_cpts_x(self, X: str, cpts: Dict[str, pd.DataFrame]) -> tuple[List[pd.DataFrame], List[str]]:
+        """
+        :param X: a variable in the BN 
+        :param cpts: List 
+
+        :return: a list of cpts that include X
+        """
+        cpts_x = []
+        cpts_x_values = []
+
+        for key in cpts:
+            if X in list(cpts[key].columns):
+                cpts_x.append(cpts[key])
+                cpts_x_values.append(key)
+
+        return cpts_x, cpts_x_values
+
+    def replace_cpts(self, cpts: Dict[str, pd.DataFrame], remove: List[str], add: Dict[str, pd.DataFrame]):
+        """
+        :param remove: List of cpt keys to be replaces
+        :param add: List of 
+
+        replace all factors in the List of keys by add factor
+        """
+        for variable in remove:
+            del cpts[variable]
+
+        cpts.update(add)
+
+        return cpts
+
     def d_sep(self, X: Set[str], Y: Set[str], Z: Set[str]) -> bool:
         """
         Gets the d-seperation given the three sets of variables: X, Y and Z,
@@ -461,7 +492,7 @@ class BayesNet:
         
         return cpt
 
-    def sum_out(self, f_x: pd.DataFrame, Z: Set[str]) -> pd.DataFrame:
+    def sum_out(self, f_x: pd.DataFrame, Z: str) -> pd.DataFrame:
         """
         :param X: a set of variables => e.g BCD
         :param Z: a subset of variables X  => e.g D
@@ -469,9 +500,8 @@ class BayesNet:
         :return: a factor corresponding to Σ_z(f)
         """
         X = set(f_x.columns.tolist()) - set(['p'])
-        Y = X - Z # e.g BC
+        Y = X - set([Z]) # e.g BC
 
-        # new_f = self.create_factor(Y, value=[0])
         new_f: pd.DataFrame = f_x.groupby(list(Y), as_index = False)['p'].sum()
 
         return new_f
@@ -528,23 +558,7 @@ class BayesNet:
         """
         pass
 
-    def get_cpts_x(self, X: str) -> List[pd.DataFrame]:
-        """
-        :param X: a variable in the BN 
-
-        :return: a list of cpts that include X
-        """
-        cpts = self.get_all_cpts()
-        print(cpts)
-        cpts_x = []
-
-        for cpt in cpts.values():
-            if X in list(cpt.columns):
-                cpts_x.append(cpt)
-
-        return cpts_x
-
-    def marginal_dist(self, Q: List[str],  e: List[tuple[str, bool] or None], pi: List[str]) -> pd.DataFrame: # TODO: add types
+    def marginal_distrib(self, Q: List[str],  e: List[tuple[str, bool] or None], pi: List[str]) -> pd.DataFrame:
         """
         Computes the marginal distribution P(Q|e)
         given the query variables Q and possibly empty evidence e
@@ -553,38 +567,23 @@ class BayesNet:
         :param e: evidence
         :param pi: ordering of network variables not in Q
 
-        :return: the marginal distribution of P(Q|E)
+        :return: the marginal distribution of P(Q, E)
         """
+        for q in Q: 
+            if q in pi: 
+                pi.remove(q)
 
         cpts = self.get_all_cpts()
-        cpts_e = []
-        for cpt in cpts.values():
-            cpts_e.append(self.reduce_factor(pd.Series(dict(e)), cpt))
+        cpts_e = {}
+        f_sum = pd.DataFrame()
+
+        for key in cpts:
+            cpts_e.update({key: self.reduce_factor(pd.Series(dict(e)), cpts[key])})
         
-        print(cpts_e)
         for i in range(len(pi)):
-            f_pi = self.get_cpts_x(pi[i])
-            f = self.mult_factors(f_pi)
-
-        # cpts = self.get_all_cpts()
-        # for c in cpts:
-        #     print(cpts)
-
-        # update CTPs based on evidence, if it's not empty
-        # if e:
-        #     for var in pi:
-        #         cpt = self.get_cpt(var)
-        #         cpt = self.get_compatible_instantiations_table(pd.Series(e), cpt)
-        #         self.update_cpt(var, cpt)
-
-        # cpts = self.get_all_cpts()
-        # for c in cpts:
-        #     print(cpts)
-        # for var in pi:
-        #     cpt = self.get_cpt(var)
-            # TODO multiplication of factors
-        # TODO summing out of factors
-
-        
+            f_pi, fpi_keys = self.get_cpts_x(pi[i], cpts_e)
+            f_mult = self.mult_factors(f_pi)
+            f_sum = self.sum_out(f_mult, pi[i])
+            cpts = self.replace_cpts(cpts_e, fpi_keys, {pi[i]: f_sum})
             
-
+        return self.mult_factors(list(cpts_e.values()))
