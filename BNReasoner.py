@@ -229,7 +229,7 @@ class BNReasoner:
 
         temp_bn.net_prune(set(Q), e)                    # type: ignore
 
-    def marginal_dist(self, Q: List[str], pi: List[str], e: List[tuple[str, bool]]): # TODO: add types
+    def marginal_dist(self, Q: List[str], e: List[tuple[str, bool] or None], pi: List[str]): # TODO: add types
         """
         Computes the marginal distribution P(Q|e)
         given the query variables Q and possibly empty evidence e
@@ -242,13 +242,14 @@ class BNReasoner:
         """
         temp_bn = copy.deepcopy(self.bn)
         
-        cpt = temp_bn.get_cpt(Q[0])
-        cpt_2 = temp_bn.get_cpt(Q[1])
-        temp_bn.sum_out(cpt, set([Q[1]]))                     # type: ignore
-        l = [cpt, cpt_2]
-        temp_bn.mult_factors(l)
+        # cpt = temp_bn.get_cpt(Q[0])
+        # cpt_1 = temp_bn.get_cpt(Q[2])
+        # cpt_2 = temp_bn.get_cpt(Q[1])
+        # temp_bn.sum_out(cpt, set([Q[1]]))                     # type: ignore
+        # l = [cpt, cpt_2, cpt_1]
+        # temp_bn.mult_factors(l)
 
-        # temp_bn.marginal_dist(Q, pi, e)                 # type: ignore
+        temp_bn.marginal_dist(Q, e, pi)                 # type: ignore
 
     def map_and_mpe(self, Q: List[str], R: List[tuple[str, bool]]): # TODO: add types
         """
@@ -269,7 +270,7 @@ if __name__ =='__main__':
     print(dog_problem.ordering_min_degree())
     print(dog_problem.ordering_min_fill())
     dog_problem.network_prune(['family-out'],[('dog-out', True), ('hear-bark', False)])
-    dog_problem.marginal_dist(['dog-out', 'family-out'], [], [])
+    dog_problem.marginal_dist(['dog-out', 'family-out', 'hear-bark'], [], [])
 
     # create graphs
     # bn = BayesNet()

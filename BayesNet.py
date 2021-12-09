@@ -528,33 +528,60 @@ class BayesNet:
         """
         pass
 
-    def marginal_dist(self, Q: List[str], pi: List[str], e: List[tuple[str, bool]]): # TODO: add types
+    def get_cpts_x(self, X: str) -> List[pd.DataFrame]:
+        """
+        :param X: a variable in the BN 
+
+        :return: a list of cpts that include X
+        """
+        cpts = self.get_all_cpts()
+        print(cpts)
+        cpts_x = []
+
+        for cpt in cpts.values():
+            if X in list(cpt.columns):
+                cpts_x.append(cpt)
+
+        return cpts_x
+
+    def marginal_dist(self, Q: List[str],  e: List[tuple[str, bool] or None], pi: List[str]) -> pd.DataFrame: # TODO: add types
         """
         Computes the marginal distribution P(Q|e)
         given the query variables Q and possibly empty evidence e
 
         :param Q: query variables
-        :param pi: ordering of network variables not in Q
         :param e: evidence
+        :param pi: ordering of network variables not in Q
 
-        :return: TODO
+        :return: the marginal distribution of P(Q|E)
         """
+
+        cpts = self.get_all_cpts()
+        cpts_e = []
+        for cpt in cpts.values():
+            cpts_e.append(self.reduce_factor(pd.Series(dict(e)), cpt))
+        
+        print(cpts_e)
+        for i in range(len(pi)):
+            f_pi = self.get_cpts_x(pi[i])
+            f = self.mult_factors(f_pi)
+
         # cpts = self.get_all_cpts()
         # for c in cpts:
         #     print(cpts)
 
         # update CTPs based on evidence, if it's not empty
-        if e:
-            for var in pi:
-                cpt = self.get_cpt(var)
-                cpt = self.get_compatible_instantiations_table(pd.Series(e), cpt)
-                self.update_cpt(var, cpt)
+        # if e:
+        #     for var in pi:
+        #         cpt = self.get_cpt(var)
+        #         cpt = self.get_compatible_instantiations_table(pd.Series(e), cpt)
+        #         self.update_cpt(var, cpt)
 
         # cpts = self.get_all_cpts()
         # for c in cpts:
         #     print(cpts)
-        for var in pi:
-            cpt = self.get_cpt(var)
+        # for var in pi:
+        #     cpt = self.get_cpt(var)
             # TODO multiplication of factors
         # TODO summing out of factors
 
