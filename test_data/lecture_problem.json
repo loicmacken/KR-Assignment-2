@@ -1,0 +1,53 @@
+{
+    "d_sep": [
+        [
+            [
+                "Winter?"
+            ],
+            [
+                "Slippery Road?"
+            ],
+            [
+                "Rain?"
+            ],
+            true
+        ],
+        [
+            [
+                "Winter?"
+            ],
+            [
+                "Wet Grass?"
+            ],
+            [
+                "Rain?",
+                "Slippery Road?"
+            ],
+            false
+        ],
+        [
+            [
+                "Sprinkler?"
+            ],
+            [
+                "Slippery Road?"
+            ],
+            [
+                "Winter?"
+            ],
+            false
+        ],
+        [
+            [
+                "Sprinkler?"
+            ],
+            [
+                "Rain?"
+            ],
+            [
+                "Wet Grass?"
+            ],
+            true
+        ]
+    ]
+}
