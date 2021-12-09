@@ -44,7 +44,6 @@ class BayesNet:
         with open(file_path) as f:
             bn_file = f.read()
         bif_reader = XMLBIFReader(string=bn_file)
-
         # load cpts
         cpts = {}
         # iterating through vars
@@ -349,6 +348,7 @@ class BayesNet:
         # d-seperated if X and Y are NOT connected
         return not self.is_connected(X, Y)
 
+    # TODO add X param
     def min_degree(self) -> List[str]:
         """
         """
@@ -384,6 +384,7 @@ class BayesNet:
 
         return pi
 
+    # TODO add X param
     def min_fill(self) -> List[str]:
         """
         """
@@ -448,38 +449,80 @@ class BayesNet:
                 new_cpt = self.get_compatible_instantiations_table(instantiation, cpt)
                 self.update_cpt(child, new_cpt)
 
-    def sum_out(self, cpt: pd.DataFrame, y: str) -> pd.DataFrame:
+    def create_factor(self, X: Set[str], value: List):
         """
+        :param X: a set of variables
+
+        :return: a factor over variables X that are all equal to zero
         """
-        print(cpt)
-        if y not in cpt.columns:
-            return cpt
+        worlds = [list(i) + value for i in itertools.product([False, True], repeat=len(X))]
+        columns = list(X) + ['p']
+        cpt = pd.DataFrame(worlds, columns=columns)
+        
+        return cpt
 
-        series_true = pd.Series(index=[y], data=[True])
-        cpt_true = self.get_compatible_instantiations_table(series_true, cpt)
-        print(cpt_true)
+    def sum_out(self, f_x: pd.DataFrame, Z: Set[str]) -> pd.DataFrame:
+        """
+        :param X: a set of variables => e.g BCD
+        :param Z: a subset of variables X  => e.g D
 
-        series_false = pd.Series(index=[y], data=[False])
-        cpt_false = self.get_compatible_instantiations_table(series_false, cpt)
-        print(cpt_false)
+        :return: a factor corresponding to Σ_z(f)
+        """
+        X = set(f_x.columns.tolist()) - set(['p'])
+        Y = X - Z # e.g BC
 
-        cpt_out = cpt_true.copy().drop(columns=[y])
+        # new_f = self.create_factor(Y, value=[0])
+        new_f: pd.DataFrame = f_x.groupby(list(Y), as_index = False)['p'].sum()
 
-        # print(cpt_true['p'])
-        # print(cpt_false['p'])
-        # print(cpt_true['p'] + cpt_false['p'])
-        sum_cols = cpt_true['p'] + cpt_false['p']
-        cpt_out['p'] = sum_cols / 2
+        return new_f
 
-        print(cpt_out)
-        return cpt_out
+    # def sum_out(self, cpt: pd.DataFrame, y: str) -> pd.DataFrame:
+        # """
+        # """
+        # print(cpt)
+        # if y not in cpt.columns:
+        #     return cpt
 
-    def mult(self, cpt: pd.DataFrame) -> pd.DataFrame:
+        # series_true = pd.Series(index=[y], data=[True])
+        # cpt_true = self.get_compatible_instantiations_table(series_true, cpt)
+        # print(cpt_true)
+
+        # series_false = pd.Series(index=[y], data=[False])
+        # cpt_false = self.get_compatible_instantiations_table(series_false, cpt)
+        # print(cpt_false)
+
+        # cpt_out = cpt_true.copy().drop(columns=[y])
+
+        # # print(cpt_true['p'])
+        # # print(cpt_false['p'])
+        # # print(cpt_true['p'] + cpt_false['p'])
+        # sum_cols = cpt_true['p'] + cpt_false['p']
+        # cpt_out['p'] = sum_cols / 2
+
+        # print(cpt_out)
+        # return cpt_out
+
+    def mult_factors(self, factors: List[pd.DataFrame]) -> pd.DataFrame:
+        """
+        :param factors: list of factor to miltiply
+
+        :return: a factor corresponding to the product Π(f)
+        """
+        Z = set()
+        for f in factors:
+            X = set(f.columns.tolist()) - set(['p'])
+            Z = Z | X
+
+        new_f = self.create_factor(Z, value=[1])
+        for _, z in new_f.iterrows():
+            print(z)
+
+        return new_f
+
+    def max_out(self): 
         """
         """
         pass
-
-
 
     def marginal_dist(self, Q: List[str], pi: List[str], e: List[tuple[str, bool]]): # TODO: add types
         """

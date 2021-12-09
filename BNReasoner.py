@@ -241,10 +241,14 @@ class BNReasoner:
         :return: TODO
         """
         temp_bn = copy.deepcopy(self.bn)
+        
+        cpt = temp_bn.get_cpt(Q[0])
+        cpt_2 = temp_bn.get_cpt(Q[1])
+        temp_bn.sum_out(cpt, set([Q[1]]))                     # type: ignore
+        l = [cpt, cpt_2]
+        temp_bn.mult_factors(l)
 
-        temp_bn.sum_out(Q[0], Q[1])                     # type: ignore
-
-        temp_bn.marginal_dist(Q, pi, e)                 # type: ignore
+        # temp_bn.marginal_dist(Q, pi, e)                 # type: ignore
 
     def map_and_mpe(self, Q: List[str], R: List[tuple[str, bool]]): # TODO: add types
         """
@@ -262,12 +266,9 @@ class BNReasoner:
 if __name__ =='__main__':
     dog_problem = BNReasoner("testing\\dog_problem.BIFXML")
     print(dog_problem.d_seperation(['family-out'], ['hear-bark'], ['dog-out']))
-    # TODO use get_all_variables func as input
-    # print(dog_problem.ordering_min_degree(['family-out', 'hear-bark', 'dog-out']))
-    # print(dog_problem.ordering_min_fill(['family-out', 'hear-bark', 'dog-out']))
     print(dog_problem.ordering_min_degree())
     print(dog_problem.ordering_min_fill())
-    dog_problem.network_prune(['family-out', 'hear-bark', 'dog-out'],[('light-out', True)])
+    dog_problem.network_prune(['family-out'],[('dog-out', True), ('hear-bark', False)])
     dog_problem.marginal_dist(['dog-out', 'family-out'], [], [])
 
     # create graphs
