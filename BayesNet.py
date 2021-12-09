@@ -456,7 +456,7 @@ class BayesNet:
         :return: a factor over variables X that are all equal to zero
         """
         worlds = [list(i) + value for i in itertools.product([False, True], repeat=len(X))]
-        columns = list(X) + ['p']
+        columns = list(X) + ['new_p']
         cpt = pd.DataFrame(worlds, columns=columns)
         
         return cpt
@@ -514,8 +514,12 @@ class BayesNet:
             Z = Z | X
 
         new_f = self.create_factor(Z, value=[1])
-        for _, z in new_f.iterrows():
-            print(z)
+        for f1 in factors:
+            new_f = new_f.merge(f1)
+            new_f.new_p = new_f.new_p * new_f.p
+            new_f.drop('p', axis=1, inplace=True)
+
+        new_f.rename(columns={'new_p':'p'}, inplace=True)
 
         return new_f
 
