@@ -104,13 +104,13 @@ class BNReasoner:
 
 if __name__ =='__main__':
     # get the names of all test problems
-    lecture_Example = BNReasoner("testing/lecture_Example.BIFXML")
-    dog_problem = BNReasoner("testing/dog_problem.BIFXML")
-    print(dog_problem.d_seperation(['family-out'], ['hear-bark'], ['dog-out']))
-    print(dog_problem.ordering_min_degree())
-    print(dog_problem.ordering_min_fill())
-    dog_problem.network_prune(['family-out'],[('dog-out', True), ('hear-bark', False)])
-    print(lecture_Example.marginal_dist(['Slippery Road?',  'Wet Grass?'], [('Winter?', True), ('Sprinkler?', False)], ['Winter?', 'Rain?', 'Sprinkler?']))
+    # lecture_Example = BNReasoner("testing/lecture_Example.BIFXML")
+    # dog_problem = BNReasoner("testing/dog_problem.BIFXML")
+    # print(dog_problem.d_seperation(['family-out'], ['hear-bark'], ['dog-out']))
+    # print(dog_problem.ordering_min_degree())
+    # print(dog_problem.ordering_min_fill())
+    # dog_problem.network_prune(['family-out'],[('dog-out', True), ('hear-bark', False)])
+    # print(lecture_Example.marginal_dist(['Slippery Road?',  'Wet Grass?'], [('Winter?', True), ('Sprinkler?', False)], ['Winter?', 'Rain?', 'Sprinkler?']))
 
     # TESTING -------------------------
 
@@ -127,6 +127,9 @@ if __name__ =='__main__':
 
         # test d-seperation
         for X, Y, Z, result in data['d_sep']:
-            print(f'Testing d-sep of {prob}:\n X, Y, Z = {X}, {Y}, {Z}\n result = {result}')
-            assert reasoner.d_seperation(X, Y, Z) == result
+            try:
+                # print(f'Testing d-sep of {prob}:\n X, Y, Z = {X}, {Y}, {Z}\n result = {result}')
+                assert reasoner.d_seperation(X, Y, Z) == result
+            except AssertionError:
+                print(f'Error when testing d-sep of {prob}: X, Y, Z = {X}, {Y}, {Z}; result = {result}')
         

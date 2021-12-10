@@ -71,7 +71,7 @@ def write_lecture_example():
             [
                 [P],
                 [R],
-                [G],
+                [G, W],
                 True
             ]
         ]
