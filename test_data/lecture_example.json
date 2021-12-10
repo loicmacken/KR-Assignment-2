@@ -1,0 +1,98 @@
+{
+    "d_sep": [
+        [
+            [
+                "Winter?"
+            ],
+            [
+                "Slippery Road?"
+            ],
+            [
+                "Rain?"
+            ],
+            true
+        ],
+        [
+            [
+                "Winter?"
+            ],
+            [
+                "Wet Grass?"
+            ],
+            [
+                "Rain?",
+                "Slippery Road?"
+            ],
+            false
+        ],
+        [
+            [
+                "Sprinkler?"
+            ],
+            [
+                "Slippery Road?"
+            ],
+            [
+                "Winter?"
+            ],
+            true
+        ],
+        [
+            [
+                "Sprinkler?"
+            ],
+            [
+                "Rain?"
+            ],
+            [
+                "Wet Grass?",
+                "Winter?"
+            ],
+            false
+        ]
+    ],
+    "min_degree": [
+        [
+            [
+                "Winter?",
+                "Rain?",
+                "Slippery Road?"
+            ],
+            [
+                "Slippery Road?",
+                "Winter?",
+                "Rain?"
+            ]
+        ],
+        [
+            [
+                "Sprinkler?",
+                "Wet Grass?",
+                "Rain?",
+                "Slippery Road?"
+            ],
+            [
+                "Slippery Road?",
+                "Wet Grass?",
+                "Sprinkler?",
+                "Rain?"
+            ]
+        ],
+        [
+            [
+                "Winter?",
+                "Sprinkler?",
+                "Wet Grass?",
+                "Rain?",
+                "Slippery Road?"
+            ],
+            [
+                "Slippery Road?",
+                "Winter?",
+                "Sprinkler?",
+                "Wet Grass?",
+                "Rain?"
+            ]
+        ]
+    ]
+}

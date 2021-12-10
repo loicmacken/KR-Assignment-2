@@ -48,7 +48,7 @@ class BayesNet:
         cpts = {}
         # iterating through vars
         for key, values in bif_reader.get_values().items():
-            values = values.transpose().flatten()
+            values = values.transpose().flatten() # type: ignore
             n_vars = int(math.log2(len(values)))
             worlds = [list(i) for i in itertools.product([False, True], repeat=n_vars)]
             # create empty array
@@ -72,7 +72,7 @@ class BayesNet:
         # load edges
         edges = bif_reader.get_edges()
 
-        self.create_bn(variables, edges, cpts)
+        self.create_bn(variables, edges, cpts) # type: ignore
 
     # METHODS THAT MIGHT ME USEFUL -------------------------------------------------------------------------------------
 
@@ -143,7 +143,7 @@ class BayesNet:
         var_names = instantiation.index.values
         var_names = [v for v in var_names if v in cpt.columns]  # get rid of excess variables names
         compat_indices = cpt[var_names] == instantiation[var_names].values
-        compat_indices = [all(x[1]) for x in compat_indices.iterrows()]
+        compat_indices = [all(x[1]) for x in compat_indices.iterrows()] # type: ignore
         compat_instances = cpt.loc[compat_indices]
         return compat_instances.reset_index(drop=True)
 
@@ -170,7 +170,7 @@ class BayesNet:
         if len(var_names) > 0:  # only reduce the factor if the evidence appears in it
             new_cpt = deepcopy(cpt)
             incompat_indices = cpt[var_names] != instantiation[var_names].values
-            incompat_indices = [any(x[1]) for x in incompat_indices.iterrows()]
+            incompat_indices = [any(x[1]) for x in incompat_indices.iterrows()] # type: ignore
             new_cpt.loc[incompat_indices, 'p'] = 0.0
             return new_cpt
         else:
@@ -291,7 +291,8 @@ class BayesNet:
         edges: Set[str] = set(self.get_node_parents(var)) | set(self.get_children(var)) - visited
 
         for edge in edges:
-            return self._get_connections(edge, Y, visited)
+            if self._get_connections(edge, Y, visited):
+                return True
         return False
 
     def prune_leaves(self, vars: Set[str]) -> None:
@@ -362,41 +363,27 @@ class BayesNet:
             for child in self.get_children(var):
                 self.del_edge((var, child))
 
-        # TODO remove creating edges between parents and Z removal
-        # moralize by marrying parents (making an edge between them)
-        for var in self.get_all_variables():
-            parents = self.get_node_parents(var)
-            if len(parents) > 1:
-                for i in range(len(parents) - 1):
-                    self.add_edge((parents[i], parents[i+1]))
-        
-        # remove givens: delete all edges and nodes of Z
-        for var in Z:
-            for parent in self.get_node_parents(var):
-                self.del_edge((parent, var))
-            self.del_var(var)
-
         # d-seperated if X and Y are NOT connected
         return not self.is_connected(X, Y)
 
-    # TODO add X param
-    def min_degree(self) -> List[str]:
+    def min_degree(self, X: List[str]) -> List[str]:
         """
         """
         G = self.get_interaction_graph()
         pi = []
-        X = self.get_all_variables()
 
-        len_X = len(X)
+        X_copy = X.copy()
+        len_X = len(X_copy)
+
         for i in range(len_X):
             var = ''
             min_val = 1000
 
-            # find variable in X with smallest number of neighbors in G
-            for n, nbrdict in G.adjacency():
-                if len(nbrdict) < min_val:
+            for n in X_copy:
+                nodes = len(list(G.neighbors(n)))
+                if nodes < min_val:
                     var = n
-                    min_val = len(nbrdict)
+                    min_val = nodes
 
             # add an edge between every pair of non-adjacent neighbors of pi in G
             neighbors = list(G.neighbors(var))
@@ -411,25 +398,79 @@ class BayesNet:
 
             # delete variable pi from G and from X
             G.remove_node(var)
-            X.remove(var)
+            X_copy.remove(var)
 
         return pi
 
+    # def min_fill(self, X: List[str]) -> List[str]:
+    #     """
+    #     """
+    #     G = self.get_interaction_graph()
+    #     pi = []
+
+    #     X_copy = X.copy()
+    #     len_X = len(X_copy)
+
+    #     for i in range(len_X):
+    #         min_var = ('', [])
+    #         min_edges = 1000
+
+    #         self.draw_graph(G)
+
+    #         # find variable in X with smallest number of added edges in G
+    #         for var in X_copy:
+    #             edges = []
+    #             neighbors = set(G.neighbors(var))
+
+    #             for node in neighbors:
+    #                 for neighbor in neighbors - set(node):
+    #                     if (node, neighbor) in edges or (neighbor, node) in edges:
+    #                         continue
+    #                     if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
+    #                         edges.append((node, neighbor))
+
+    #             # for node in neighbors:
+    #             #     for neighbor in neighbors:
+    #             #         if node == neighbor or [neighbor, node] in edges:
+    #             #             continue
+    #             #         if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
+    #             #             edges.append([node, neighbor])
+
+    #             if len(edges) < min_edges:
+    #                 min_var = (var, edges)
+    #                 min_edges = len(edges)
+            
+    #         # # add an edge between every pair of non-adjacent neighbors of pi in G
+    #         # for node, neighbor in min_var[1]:
+    #         #     G.add_edge(node, neighbor)
+    #         print(f'var: {min_var[0]}, num_edges: {len(min_var[1])}')
+
+    #         pi.append(min_var[0])
+
+    #         # delete variable pi from G and from X
+    #         G.remove_node(min_var[0])
+    #         X_copy.remove(min_var[0])
+
+    #     return pi
+
     # TODO add X param
-    def min_fill(self) -> List[str]:
+    def min_fill(self, X: List[str]) -> List[str]:
         """
         """
         G = self.get_interaction_graph()
         pi = []
-        X = self.get_all_variables()
 
-        len_X = len(X)
+        X_copy = X.copy()
+        len_X = len(X_copy)
+
         for i in range(len_X):
             min_var = ['', []]
             min_edges = 1000
 
+            # self.draw_graph(G)
+
             # find variable in X with smallest number of added edges in G
-            for var in X:
+            for var in X_copy:
                 edges = []
                 neighbors = list(G.neighbors(var))
 
@@ -452,7 +493,7 @@ class BayesNet:
 
             # delete variable pi from G and from X
             G.remove_node(min_var[0])
-            X.remove(min_var[0])
+            X_copy.remove(min_var[0])
 
         return pi
                 
@@ -505,32 +546,6 @@ class BayesNet:
         new_f: pd.DataFrame = f_x.groupby(list(Y), as_index = False)['p'].sum()
 
         return new_f
-
-    # def sum_out(self, cpt: pd.DataFrame, y: str) -> pd.DataFrame:
-        # """
-        # """
-        # print(cpt)
-        # if y not in cpt.columns:
-        #     return cpt
-
-        # series_true = pd.Series(index=[y], data=[True])
-        # cpt_true = self.get_compatible_instantiations_table(series_true, cpt)
-        # print(cpt_true)
-
-        # series_false = pd.Series(index=[y], data=[False])
-        # cpt_false = self.get_compatible_instantiations_table(series_false, cpt)
-        # print(cpt_false)
-
-        # cpt_out = cpt_true.copy().drop(columns=[y])
-
-        # # print(cpt_true['p'])
-        # # print(cpt_false['p'])
-        # # print(cpt_true['p'] + cpt_false['p'])
-        # sum_cols = cpt_true['p'] + cpt_false['p']
-        # cpt_out['p'] = sum_cols / 2
-
-        # print(cpt_out)
-        # return cpt_out
 
     def mult_factors(self, factors: List[pd.DataFrame]) -> pd.DataFrame:
         """
