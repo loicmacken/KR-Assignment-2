@@ -140,5 +140,5 @@ if __name__ =='__main__':
             try:
                 assert reasoner.ordering_min_fill(X) == output
             except AssertionError:
-                pass
+                print(f'ERROR: {X} -> {output}')
         

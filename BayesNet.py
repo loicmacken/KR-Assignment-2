@@ -402,6 +402,58 @@ class BayesNet:
 
         return pi
 
+    # def min_fill(self, X: List[str]) -> List[str]:
+    #     """
+    #     """
+    #     G = self.get_interaction_graph()
+    #     pi = []
+
+    #     X_copy = X.copy()
+    #     len_X = len(X_copy)
+
+    #     for i in range(len_X):
+    #         min_var = ('', [])
+    #         min_edges = 1000
+
+    #         self.draw_graph(G)
+
+    #         # find variable in X with smallest number of added edges in G
+    #         for var in X_copy:
+    #             edges = []
+    #             neighbors = set(G.neighbors(var))
+
+    #             for node in neighbors:
+    #                 for neighbor in neighbors - set(node):
+    #                     if (node, neighbor) in edges or (neighbor, node) in edges:
+    #                         continue
+    #                     if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
+    #                         edges.append((node, neighbor))
+
+    #             # for node in neighbors:
+    #             #     for neighbor in neighbors:
+    #             #         if node == neighbor or [neighbor, node] in edges:
+    #             #             continue
+    #             #         if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
+    #             #             edges.append([node, neighbor])
+
+    #             if len(edges) < min_edges:
+    #                 min_var = (var, edges)
+    #                 min_edges = len(edges)
+            
+    #         # # add an edge between every pair of non-adjacent neighbors of pi in G
+    #         # for node, neighbor in min_var[1]:
+    #         #     G.add_edge(node, neighbor)
+    #         print(f'var: {min_var[0]}, num_edges: {len(min_var[1])}')
+
+    #         pi.append(min_var[0])
+
+    #         # delete variable pi from G and from X
+    #         G.remove_node(min_var[0])
+    #         X_copy.remove(min_var[0])
+
+    #     return pi
+
+    # TODO add X param
     def min_fill(self, X: List[str]) -> List[str]:
         """
         """
@@ -412,38 +464,30 @@ class BayesNet:
         len_X = len(X_copy)
 
         for i in range(len_X):
-            min_var = ('', [])
+            min_var = ['', []]
             min_edges = 1000
 
-            self.draw_graph(G)
+            # self.draw_graph(G)
 
             # find variable in X with smallest number of added edges in G
             for var in X_copy:
                 edges = []
-                neighbors = set(G.neighbors(var))
+                neighbors = list(G.neighbors(var))
 
                 for node in neighbors:
-                    for neighbor in neighbors - set(node):
-                        if (node, neighbor) in edges or (neighbor, node) in edges:
+                    for neighbor in neighbors:
+                        if node == neighbor or [neighbor, node] in edges:
                             continue
                         if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
-                            edges.append((node, neighbor))
-
-                # for node in neighbors:
-                #     for neighbor in neighbors:
-                #         if node == neighbor or [neighbor, node] in edges:
-                #             continue
-                #         if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
-                #             edges.append([node, neighbor])
+                            edges.append([node, neighbor])
 
                 if len(edges) < min_edges:
-                    min_var = (var, edges)
+                    min_var = [var, edges]
                     min_edges = len(edges)
             
-            # # add an edge between every pair of non-adjacent neighbors of pi in G
-            # for node, neighbor in min_var[1]:
-            #     G.add_edge(node, neighbor)
-            print(f'var: {min_var[0]}, num_edges: {len(min_var[1])}')
+            # add an edge between every pair of non-adjacent neighbors of pi in G
+            for node, neighbor in min_var[1]:
+                G.add_edge(node, neighbor)
 
             pi.append(min_var[0])
 

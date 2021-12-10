@@ -103,7 +103,11 @@
                 "light-on",
                 "dog-out"
             ],
-            []
+            [
+                "light-on",
+                "family-out",
+                "dog-out"
+            ]
         ],
         [
             [
@@ -112,7 +116,12 @@
                 "dog-out",
                 "hear-bark"
             ],
-            []
+            [
+                "bowel-problem",
+                "hear-bark",
+                "dog-out",
+                "family-out"
+            ]
         ],
         [
             [
@@ -122,7 +131,13 @@
                 "dog-out",
                 "hear-bark"
             ],
-            []
+            [
+                "bowel-problem",
+                "light-on",
+                "family-out",
+                "dog-out",
+                "hear-bark"
+            ]
         ]
     ]
 }

@@ -55,15 +55,15 @@ def write_dog_problem():
         min_fill: [
             [
                 [F, L, D],
-                []
+                [L, F, D]
             ],
             [
                 [F, B, D, H],
-                []
+                [B, H, D, F]
             ],
             [
                 [F, B, L, D, H],
-                []
+                [B, L, F, D, H]
             ]
         ]
     }
