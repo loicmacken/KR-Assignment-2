@@ -1,6 +1,8 @@
 import json
 
 d_sep = 'd_sep'
+min_deg = 'min_degree'
+min_fill = 'min_fill'
 
 def write_dog_problem():
     F = 'family-out'
@@ -34,6 +36,34 @@ def write_dog_problem():
                 [B],
                 [L, F],
                 False
+            ]
+        ],
+        min_deg: [
+            [
+                [F, L, D],
+                [L, F, D]
+            ],
+            [
+                [F, B, D, H],
+                [H, B, D, F]
+            ],
+            [
+                [F, B, L, D, H],
+                [L, H, F, B, D]
+            ]
+        ],
+        min_fill: [
+            [
+                [F, L, D],
+                []
+            ],
+            [
+                [F, B, D, H],
+                []
+            ],
+            [
+                [F, B, L, D, H],
+                []
             ]
         ]
     }
@@ -74,6 +104,20 @@ def write_lecture_example():
                 [G, W],
                 False
             ]
+        ],
+        min_deg: [
+            [
+                [W, R, S],
+                [S, W, R]
+            ],
+            [
+                [P, G, R, S],
+                [S, G, P, R]
+            ],
+            [
+                [W, P, G, R, S],
+                [S, W, P, G, R]
+            ]
         ]
     }
 
@@ -112,6 +156,20 @@ def write_lecture_example2():
                 [I],
                 [X],
                 False
+            ]
+        ],
+        min_deg: [
+            [
+                [I, Y, X, O],
+                [I, O, Y, X]
+            ],
+            [
+                [J, I, X, O],
+                [I, J, X, O]
+            ],
+            [
+                [J, I, Y, X, O],
+                [I, J, Y, X, O]
             ]
         ]
     }

@@ -36,7 +36,7 @@ class BNReasoner:
 
         return temp_bn.d_sep(set(X), set(Y), set(Z)) # type: ignore
 
-    def ordering_min_degree(self) -> List[str]:
+    def ordering_min_degree(self, X: List[str]) -> List[str]:
         """
         Gets the ordering of the variable list X
         based on min-degree heuristics
@@ -47,9 +47,9 @@ class BNReasoner:
         """
         temp_bn = copy.deepcopy(self.bn)
 
-        return temp_bn.min_degree() # type: ignore
+        return temp_bn.min_degree(X) # type: ignore
 
-    def ordering_min_fill(self) -> List[str]:
+    def ordering_min_fill(self, X: List[str]) -> List[str]:
         """
         Gets the ordering of the variable list X
         based on min-degree heuristics
@@ -60,7 +60,7 @@ class BNReasoner:
         """
         temp_bn = copy.deepcopy(self.bn)
 
-        return temp_bn.min_fill() # type: ignore
+        return temp_bn.min_fill(X) # type: ignore
 
     def network_prune(self, Q: List[str], e: List[tuple[str, bool]]) -> None:
         """
@@ -106,6 +106,7 @@ if __name__ =='__main__':
     # get the names of all test problems
     # lecture_Example = BNReasoner("testing/lecture_Example.BIFXML")
     # dog_problem = BNReasoner("testing/dog_problem.BIFXML")
+    
     # print(dog_problem.d_seperation(['family-out'], ['hear-bark'], ['dog-out']))
     # print(dog_problem.ordering_min_degree())
     # print(dog_problem.ordering_min_fill())
@@ -115,6 +116,7 @@ if __name__ =='__main__':
     # TESTING -------------------------
 
     test_problems = ['dog_problem', 'lecture_example', 'lecture_example2']
+    # test_problems = ['dog_problem']
 
     for prob in test_problems:
         # create a reasoner object based on the problem BIFXML file
@@ -128,4 +130,12 @@ if __name__ =='__main__':
         # test d-seperation
         for X, Y, Z, result in data['d_sep']:
             assert reasoner.d_seperation(X, Y, Z) == result
+
+        # test min-degree ordering
+        for X, output in data['min_degree']:
+            assert reasoner.ordering_min_degree(X) == output
+
+        # test min-fill ordering
+        for X, output in data['min_fill']:
+            assert reasoner.ordering_min_degree(X) == output
         
