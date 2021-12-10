@@ -14,7 +14,7 @@ class BNReasoner:
             # constructs a BN object
             self.bn = BayesNet()
             # Loads the BN from an BIFXML file
-            self.bn.load_from_bifxml(net)
+            self.bn.load_from_bifxml(net) # type: ignore
         else:
             self.bn = net
 
@@ -34,7 +34,7 @@ class BNReasoner:
 
         temp_bn = copy.deepcopy(self.bn)
 
-        return temp_bn.d_sep(set(X), set(Y), set(Z))    # type: ignore
+        return temp_bn.d_sep(set(X), set(Y), set(Z)) # type: ignore
 
     def ordering_min_degree(self) -> List[str]:
         """
@@ -47,7 +47,7 @@ class BNReasoner:
         """
         temp_bn = copy.deepcopy(self.bn)
 
-        return temp_bn.min_degree()                    # type: ignore
+        return temp_bn.min_degree() # type: ignore
 
     def ordering_min_fill(self) -> List[str]:
         """
@@ -60,7 +60,7 @@ class BNReasoner:
         """
         temp_bn = copy.deepcopy(self.bn)
 
-        return temp_bn.min_fill()                      # type: ignore
+        return temp_bn.min_fill() # type: ignore
 
     def network_prune(self, Q: List[str], e: List[tuple[str, bool]]) -> None:
         """
@@ -72,7 +72,7 @@ class BNReasoner:
         """
         temp_bn = copy.deepcopy(self.bn)
 
-        return temp_bn.net_prune(set(Q), e)                    # type: ignore
+        return temp_bn.net_prune(set(Q), e) # type: ignore
 
     def marginal_dist(self, Q: List[str], e: List[tuple[str, bool] or None], pi: List[str]) -> pd.DataFrame:
         """
@@ -87,7 +87,7 @@ class BNReasoner:
         """
         temp_bn = copy.deepcopy(self.bn)
 
-        return temp_bn.marginal_distrib(Q, e, pi)
+        return temp_bn.marginal_distrib(Q, e, pi) # type: ignore
 
     def map_and_mpe(self, Q: List[str], R: List[tuple[str, bool]]): # TODO: add types
         """

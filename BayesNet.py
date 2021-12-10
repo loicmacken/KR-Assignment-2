@@ -48,7 +48,7 @@ class BayesNet:
         cpts = {}
         # iterating through vars
         for key, values in bif_reader.get_values().items():
-            values = values.transpose().flatten()
+            values = values.transpose().flatten() # type: ignore
             n_vars = int(math.log2(len(values)))
             worlds = [list(i) for i in itertools.product([False, True], repeat=n_vars)]
             # create empty array
@@ -72,7 +72,7 @@ class BayesNet:
         # load edges
         edges = bif_reader.get_edges()
 
-        self.create_bn(variables, edges, cpts)
+        self.create_bn(variables, edges, cpts) # type: ignore
 
     # METHODS THAT MIGHT ME USEFUL -------------------------------------------------------------------------------------
 
@@ -143,7 +143,7 @@ class BayesNet:
         var_names = instantiation.index.values
         var_names = [v for v in var_names if v in cpt.columns]  # get rid of excess variables names
         compat_indices = cpt[var_names] == instantiation[var_names].values
-        compat_indices = [all(x[1]) for x in compat_indices.iterrows()]
+        compat_indices = [all(x[1]) for x in compat_indices.iterrows()] # type: ignore
         compat_instances = cpt.loc[compat_indices]
         return compat_instances.reset_index(drop=True)
 
@@ -170,7 +170,7 @@ class BayesNet:
         if len(var_names) > 0:  # only reduce the factor if the evidence appears in it
             new_cpt = deepcopy(cpt)
             incompat_indices = cpt[var_names] != instantiation[var_names].values
-            incompat_indices = [any(x[1]) for x in incompat_indices.iterrows()]
+            incompat_indices = [any(x[1]) for x in incompat_indices.iterrows()] # type: ignore
             new_cpt.loc[incompat_indices, 'p'] = 0.0
             return new_cpt
         else:
@@ -505,32 +505,6 @@ class BayesNet:
         new_f: pd.DataFrame = f_x.groupby(list(Y), as_index = False)['p'].sum()
 
         return new_f
-
-    # def sum_out(self, cpt: pd.DataFrame, y: str) -> pd.DataFrame:
-        # """
-        # """
-        # print(cpt)
-        # if y not in cpt.columns:
-        #     return cpt
-
-        # series_true = pd.Series(index=[y], data=[True])
-        # cpt_true = self.get_compatible_instantiations_table(series_true, cpt)
-        # print(cpt_true)
-
-        # series_false = pd.Series(index=[y], data=[False])
-        # cpt_false = self.get_compatible_instantiations_table(series_false, cpt)
-        # print(cpt_false)
-
-        # cpt_out = cpt_true.copy().drop(columns=[y])
-
-        # # print(cpt_true['p'])
-        # # print(cpt_false['p'])
-        # # print(cpt_true['p'] + cpt_false['p'])
-        # sum_cols = cpt_true['p'] + cpt_false['p']
-        # cpt_out['p'] = sum_cols / 2
-
-        # print(cpt_out)
-        # return cpt_out
 
     def mult_factors(self, factors: List[pd.DataFrame]) -> pd.DataFrame:
         """
