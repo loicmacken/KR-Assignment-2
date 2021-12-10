@@ -245,27 +245,31 @@ class BNReasoner:
 
         return temp_bn.marginal_distrib(Q, e, pi)
 
-    def map_and_mpe(self, Q: List[str], R: List[tuple[str, bool]]): # TODO: add types
+    def map_and_mpe(self, M: List[str] or None, E: List[tuple[str, bool]]): # TODO: add types
         """
-        Computes the most likely instantiations of Q
-        given possibly empty set of query variables Q and an evidence E
+        Computes the most likely instantiations of M
+        given possibly empty set of query variables M and an evidence E
 
-        :param Q: query variables
+        :param M: query variables
         :param E: evidence
 
         :return: TODO
         """
-        raise ValueError
+        temp_bn = copy.deepcopy(self.bn)
+
+        return temp_bn.map_and_mpe(M, E)
 
 
 if __name__ =='__main__':
     lecture_Example = BNReasoner("testing/lecture_Example.BIFXML")
+    lecture_Example_2 = BNReasoner("testing/lecture_Example2.BIFXML")
     dog_problem = BNReasoner("testing/dog_problem.BIFXML")
     print(dog_problem.d_seperation(['family-out'], ['hear-bark'], ['dog-out']))
-    print(dog_problem.ordering_min_degree())
-    print(dog_problem.ordering_min_fill())
+    # print(dog_problem.ordering_min_degree())
+    # print(dog_problem.ordering_min_fill())
     dog_problem.network_prune(['family-out'],[('dog-out', True), ('hear-bark', False)])
     print(lecture_Example.marginal_dist(['Slippery Road?',  'Wet Grass?'], [('Winter?', True), ('Sprinkler?', False)], ['Winter?', 'Rain?', 'Sprinkler?']))
+    print(lecture_Example_2.map_and_mpe(M=['I',  'J'], E=[('O', False)]))
 
     # create graphs
     # bn = BayesNet()

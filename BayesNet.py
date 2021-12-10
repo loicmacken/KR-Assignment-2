@@ -553,10 +553,20 @@ class BayesNet:
 
         return new_f
 
-    def max_out(self): 
+    def max_out(self, f_x: pd.DataFrame, Z: str) -> pd.DataFrame: 
         """
+        :param X: a set of variables => e.g BCD
+        :param Z: a subset of variables X  => e.g D
+
+        :return: a factor corresponding to Max_z(f)
         """
-        pass
+        X = set(f_x.columns.tolist()) - set(['p'])
+        Y = X - set([Z]) # e.g BC
+
+        new_f: pd.DataFrame = f_x.groupby(list(Y), as_index = False)
+        print('new_f', new_f)
+
+        return new_f
 
     def marginal_distrib(self, Q: List[str],  e: List[tuple[str, bool] or None], pi: List[str]) -> pd.DataFrame:
         """
@@ -584,6 +594,35 @@ class BayesNet:
             f_pi, fpi_keys = self.get_cpts_x(pi[i], cpts_e)
             f_mult = self.mult_factors(f_pi)
             f_sum = self.sum_out(f_mult, pi[i])
-            cpts = self.replace_cpts(cpts_e, fpi_keys, {pi[i]: f_sum})
+            cpts_e = self.replace_cpts(cpts_e, fpi_keys, {pi[i]: f_sum})
+            
+        return self.mult_factors(list(cpts_e.values()))
+
+    def map_and_mpe(self, M: List[str] or None, e: List[tuple[str, bool]]):
+        Q = self.get_all_variables()
+
+        if M is None:
+            M = Q
+
+        self.net_prune(set(M), e)
+        self.draw_structure()
+        print(list(set(Q) - set(M)))
+        pi = self.min_degree(list(set(Q) - set(M))) + self.min_degree(M)
+        print(pi, 'pi')
+        cpts = self.get_all_cpts()
+        cpts_e = {}
+
+        for key in cpts:
+            cpts_e.update({key: self.reduce_factor(pd.Series(dict(e)), cpts[key])})
+
+        for i in range(len(pi)):
+            f_pi, fpi_keys = self.get_cpts_x(pi[i], cpts_e)
+            fi = self.mult_factors(f_pi)
+            if pi in M:
+                fi = self.max_out(fi, pi[i])
+            else:
+                fi = self.sum_out(fi, pi[i])
+
+            cpts_e = self.replace_cpts(cpts_e, fpi_keys, {pi[i]: fi})
             
         return self.mult_factors(list(cpts_e.values()))
