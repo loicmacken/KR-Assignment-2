@@ -44,7 +44,6 @@ class BayesNet:
         with open(file_path) as f:
             bn_file = f.read()
         bif_reader = XMLBIFReader(string=bn_file)
-
         # load cpts
         cpts = {}
         # iterating through vars
@@ -229,7 +228,7 @@ class BayesNet:
 
     # ADDED FUNCTIONS -----------------------------------
 
-    def draw_graph(self, graph: nx.DiGraph) -> None:
+    def draw_graph(self, graph: nx.Graph) -> None:
         """
         Visualize structure of the BN.
         """
@@ -311,6 +310,37 @@ class BayesNet:
             for leaf in leaves_to_delete:
                 self.del_var(leaf)
 
+    def get_cpts_x(self, X: str, cpts: Dict[str, pd.DataFrame]) -> tuple[List[pd.DataFrame], List[str]]:
+        """
+        :param X: a variable in the BN 
+        :param cpts: List 
+
+        :return: a list of cpts that include X
+        """
+        cpts_x = []
+        cpts_x_values = []
+
+        for key in cpts:
+            if X in list(cpts[key].columns):
+                cpts_x.append(cpts[key])
+                cpts_x_values.append(key)
+
+        return cpts_x, cpts_x_values
+
+    def replace_cpts(self, cpts: Dict[str, pd.DataFrame], remove: List[str], add: Dict[str, pd.DataFrame]):
+        """
+        :param remove: List of cpt keys to be replaces
+        :param add: List of 
+
+        replace all factors in the List of keys by add factor
+        """
+        for variable in remove:
+            del cpts[variable]
+
+        cpts.update(add)
+
+        return cpts
+
     def d_sep(self, X: Set[str], Y: Set[str], Z: Set[str]) -> bool:
         """
         Gets the d-seperation given the three sets of variables: X, Y and Z,
@@ -349,6 +379,7 @@ class BayesNet:
         # d-seperated if X and Y are NOT connected
         return not self.is_connected(X, Y)
 
+    # TODO add X param
     def min_degree(self) -> List[str]:
         """
         """
@@ -375,7 +406,6 @@ class BayesNet:
                         continue
                     if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
                         G.add_edge(node, neighbor)
-            print(var)
 
             pi.append(var)
 
@@ -385,6 +415,7 @@ class BayesNet:
 
         return pi
 
+    # TODO add X param
     def min_fill(self) -> List[str]:
         """
         """
@@ -394,33 +425,34 @@ class BayesNet:
 
         len_X = len(X)
         for i in range(len_X):
-            min_var = ''
+            min_var = ['', []]
             min_edges = 1000
+
+            # find variable in X with smallest number of added edges in G
             for var in X:
-                edges = 0
+                edges = []
                 neighbors = list(G.neighbors(var))
+
                 for node in neighbors:
                     for neighbor in neighbors:
-                        if node == neighbor:
+                        if node == neighbor or [neighbor, node] in edges:
                             continue
                         if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
-                            edges += 1
-                if edges < min_edges:
-                    min_var = var
-                    min_edges = edges
+                            edges.append([node, neighbor])
 
-            neighbors = list(G.neighbors(min_var))
-            for node in neighbors:
-                for neighbor in neighbors:
-                    if node == neighbor:
-                        continue
-                    if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
-                        G.add_edge(node, neighbor)
+                if len(edges) < min_edges:
+                    min_var = [var, edges]
+                    min_edges = len(edges)
+            
+            # add an edge between every pair of non-adjacent neighbors of pi in G
+            for node, neighbor in min_var[1]:
+                G.add_edge(node, neighbor)
 
-            pi.append(min_var)
+            pi.append(min_var[0])
 
-            G.remove_node(min_var)
-            X.remove(min_var)
+            # delete variable pi from G and from X
+            G.remove_node(min_var[0])
+            X.remove(min_var[0])
 
         return pi
                 
@@ -435,80 +467,123 @@ class BayesNet:
         E = set([var for var, _ in e])
         QE = Q | E
 
+        evidence = dict(e)
+
         # first prune the leaves not in Q U E
         self.prune_leaves(QE)
 
         # then prune edges outgoing from E
         for parent, child in self.get_all_edges():
             if parent in E:
+                instantiation = pd.Series({parent: evidence[parent]})
                 cpt = self.get_cpt(child)
-                cpt = self.get_compatible_instantiations_table(pd.Series(e), cpt)
-                self.update_cpt(child, cpt)
+                new_cpt = self.get_compatible_instantiations_table(instantiation, cpt)
+                self.update_cpt(child, new_cpt)
 
-    def sum_out(self, cpt: pd.DataFrame, y: str) -> pd.DataFrame:
+    def create_factor(self, X: Set[str], value: List):
         """
+        :param X: a set of variables
+
+        :return: a factor over variables X that are all equal to zero
         """
-        print(cpt)
-
-        if y not in cpt.columns:
-            return cpt
-
-        series_true = pd.Series(index=[y], data=[True])
-        cpt_true = self.get_compatible_instantiations_table(series_true, cpt)
-
-        print(cpt_true)
-
-        series_false = pd.Series(index=[y], data=[False])
-        cpt_false = self.get_compatible_instantiations_table(series_false, cpt)
-
-        print(cpt_false)
-
-        cpt_out = cpt_true.copy().drop(columns=[y])
-
-        sum_cols = cpt_true['p'] + cpt_false['p']
-        cpt_out['p'] = sum_cols
-
-        print(cpt_out)
+        worlds = [list(i) + value for i in itertools.product([False, True], repeat=len(X))]
+        columns = list(X) + ['new_p']
+        cpt = pd.DataFrame(worlds, columns=columns)
         
-        return cpt_out
+        return cpt
 
-    def mult(self, cpt: pd.DataFrame) -> pd.DataFrame:
+    def sum_out(self, f_x: pd.DataFrame, Z: str) -> pd.DataFrame:
+        """
+        :param X: a set of variables => e.g BCD
+        :param Z: a subset of variables X  => e.g D
+
+        :return: a factor corresponding to Σ_z(f)
+        """
+        X = set(f_x.columns.tolist()) - set(['p'])
+        Y = X - set([Z]) # e.g BC
+
+        new_f: pd.DataFrame = f_x.groupby(list(Y), as_index = False)['p'].sum()
+
+        return new_f
+
+    # def sum_out(self, cpt: pd.DataFrame, y: str) -> pd.DataFrame:
+        # """
+        # """
+        # print(cpt)
+        # if y not in cpt.columns:
+        #     return cpt
+
+        # series_true = pd.Series(index=[y], data=[True])
+        # cpt_true = self.get_compatible_instantiations_table(series_true, cpt)
+        # print(cpt_true)
+
+        # series_false = pd.Series(index=[y], data=[False])
+        # cpt_false = self.get_compatible_instantiations_table(series_false, cpt)
+        # print(cpt_false)
+
+        # cpt_out = cpt_true.copy().drop(columns=[y])
+
+        # # print(cpt_true['p'])
+        # # print(cpt_false['p'])
+        # # print(cpt_true['p'] + cpt_false['p'])
+        # sum_cols = cpt_true['p'] + cpt_false['p']
+        # cpt_out['p'] = sum_cols / 2
+
+        # print(cpt_out)
+        # return cpt_out
+
+    def mult_factors(self, factors: List[pd.DataFrame]) -> pd.DataFrame:
+        """
+        :param factors: list of factor to miltiply
+
+        :return: a factor corresponding to the product Π(f)
+        """
+        Z = set()
+        for f in factors:
+            X = set(f.columns.tolist()) - set(['p'])
+            Z = Z | X
+
+        new_f = self.create_factor(Z, value=[1])
+        for f1 in factors:
+            new_f = new_f.merge(f1)
+            new_f.new_p = new_f.new_p * new_f.p
+            new_f.drop('p', axis=1, inplace=True)
+
+        new_f.rename(columns={'new_p':'p'}, inplace=True)
+
+        return new_f
+
+    def max_out(self): 
         """
         """
         pass
 
-
-
-    def marginal_dist(self, Q: List[str], pi: List[str], e: List[tuple[str, bool]]): # TODO: add types
+    def marginal_distrib(self, Q: List[str],  e: List[tuple[str, bool] or None], pi: List[str]) -> pd.DataFrame:
         """
         Computes the marginal distribution P(Q|e)
         given the query variables Q and possibly empty evidence e
 
         :param Q: query variables
-        :param pi: ordering of network variables not in Q
         :param e: evidence
+        :param pi: ordering of network variables not in Q
 
-        :return: TODO
+        :return: the marginal distribution of P(Q, E)
         """
-        # cpts = self.get_all_cpts()
-        # for c in cpts:
-        #     print(cpts)
+        for q in Q: 
+            if q in pi: 
+                pi.remove(q)
 
-        # update CTPs based on evidence, if it's not empty
-        if e:
-            for var in pi:
-                cpt = self.get_cpt(var)
-                cpt = self.get_compatible_instantiations_table(pd.Series(e), cpt)
-                self.update_cpt(var, cpt)
+        cpts = self.get_all_cpts()
+        cpts_e = {}
+        f_sum = pd.DataFrame()
 
-        # cpts = self.get_all_cpts()
-        # for c in cpts:
-        #     print(cpts)
-        for var in pi:
-            cpt = self.get_cpt(var)
-            # TODO multiplication of factors
-        # TODO summing out of factors
-
+        for key in cpts:
+            cpts_e.update({key: self.reduce_factor(pd.Series(dict(e)), cpts[key])})
         
+        for i in range(len(pi)):
+            f_pi, fpi_keys = self.get_cpts_x(pi[i], cpts_e)
+            f_mult = self.mult_factors(f_pi)
+            f_sum = self.sum_out(f_mult, pi[i])
+            cpts = self.replace_cpts(cpts_e, fpi_keys, {pi[i]: f_sum})
             
-
+        return self.mult_factors(list(cpts_e.values()))
