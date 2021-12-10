@@ -118,7 +118,21 @@ def write_lecture_example():
                 [W, P, G, R, S],
                 [S, W, P, G, R]
             ]
-        ]
+        ],
+        min_fill: [
+            [
+                [W, R, S],
+                [W, S, R]
+            ],
+            [
+                [P, G, R, S],
+                [G, P, S, R]
+            ],
+            [
+                [W, P, G, R, S],
+                [W, P, G, R, S]
+            ]
+        ],
     }
 
     with open('test_data\\lecture_example.json', 'w') as infile:
@@ -159,6 +173,20 @@ def write_lecture_example2():
             ]
         ],
         min_deg: [
+            [
+                [I, Y, X, O],
+                [I, O, Y, X]
+            ],
+            [
+                [J, I, X, O],
+                [I, J, X, O]
+            ],
+            [
+                [J, I, Y, X, O],
+                [I, J, Y, X, O]
+            ]
+        ],
+        min_fill: [
             [
                 [I, Y, X, O],
                 [I, O, Y, X]
