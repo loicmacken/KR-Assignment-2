@@ -115,8 +115,8 @@ if __name__ =='__main__':
 
     # TESTING -------------------------
 
-    test_problems = ['dog_problem', 'lecture_example', 'lecture_example2']
-    # test_problems = ['lecture_example2']
+    # test_problems = ['dog_problem', 'lecture_example', 'lecture_example2']
+    test_problems = ['dog_problem']
 
     for prob in test_problems:
         # create a reasoner object based on the problem BIFXML file
@@ -132,10 +132,19 @@ if __name__ =='__main__':
             assert reasoner.d_seperation(X, Y, Z) == result
 
         # test min-degree ordering
-        for X, output in data['min_degree']:
-            assert reasoner.ordering_min_degree(X) == output
+        for X, result in data['min_degree']:
+            assert reasoner.ordering_min_degree(X) == result
 
         # test min-fill ordering
-        for X, output in data['min_fill']:
-            assert reasoner.ordering_min_fill(X) == output
+        for X, result in data['min_fill']:
+            assert reasoner.ordering_min_fill(X) == result
+
+        # test network pruning
+        for Q, e, vars, edges in data['net_prune']:
+            try:
+                reasoner.bn.net_prune(set(Q), e)
+                assert reasoner.bn.get_all_variables() == vars
+                assert reasoner.bn.get_all_edges() == edges
+            except AssertionError:
+                print(f'ERROR, vars = {vars}, edges = {edges}')
         
