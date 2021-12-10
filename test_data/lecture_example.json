@@ -50,5 +50,49 @@
             ],
             false
         ]
+    ],
+    "min_degree": [
+        [
+            [
+                "Winter?",
+                "Rain?",
+                "Slippery Road?"
+            ],
+            [
+                "Slippery Road?",
+                "Winter?",
+                "Rain?"
+            ]
+        ],
+        [
+            [
+                "Sprinkler?",
+                "Wet Grass?",
+                "Rain?",
+                "Slippery Road?"
+            ],
+            [
+                "Slippery Road?",
+                "Wet Grass?",
+                "Sprinkler?",
+                "Rain?"
+            ]
+        ],
+        [
+            [
+                "Winter?",
+                "Sprinkler?",
+                "Wet Grass?",
+                "Rain?",
+                "Slippery Road?"
+            ],
+            [
+                "Slippery Road?",
+                "Winter?",
+                "Sprinkler?",
+                "Wet Grass?",
+                "Rain?"
+            ]
+        ]
     ]
 }

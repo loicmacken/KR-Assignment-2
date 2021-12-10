@@ -51,5 +51,78 @@
             ],
             false
         ]
+    ],
+    "min_degree": [
+        [
+            [
+                "family-out",
+                "light-on",
+                "dog-out"
+            ],
+            [
+                "light-on",
+                "family-out",
+                "dog-out"
+            ]
+        ],
+        [
+            [
+                "family-out",
+                "bowel-problem",
+                "dog-out",
+                "hear-bark"
+            ],
+            [
+                "hear-bark",
+                "bowel-problem",
+                "dog-out",
+                "family-out"
+            ]
+        ],
+        [
+            [
+                "family-out",
+                "bowel-problem",
+                "light-on",
+                "dog-out",
+                "hear-bark"
+            ],
+            [
+                "light-on",
+                "hear-bark",
+                "family-out",
+                "bowel-problem",
+                "dog-out"
+            ]
+        ]
+    ],
+    "min_fill": [
+        [
+            [
+                "family-out",
+                "light-on",
+                "dog-out"
+            ],
+            []
+        ],
+        [
+            [
+                "family-out",
+                "bowel-problem",
+                "dog-out",
+                "hear-bark"
+            ],
+            []
+        ],
+        [
+            [
+                "family-out",
+                "bowel-problem",
+                "light-on",
+                "dog-out",
+                "hear-bark"
+            ],
+            []
+        ]
     ]
 }
