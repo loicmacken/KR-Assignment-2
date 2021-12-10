@@ -35,7 +35,7 @@
             [
                 "Winter?"
             ],
-            false
+            true
         ],
         [
             [
@@ -48,7 +48,7 @@
                 "Wet Grass?",
                 "Winter?"
             ],
-            true
+            false
         ]
     ]
 }

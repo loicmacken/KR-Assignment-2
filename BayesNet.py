@@ -291,7 +291,8 @@ class BayesNet:
         edges: Set[str] = set(self.get_node_parents(var)) | set(self.get_children(var)) - visited
 
         for edge in edges:
-            return self._get_connections(edge, Y, visited)
+            if self._get_connections(edge, Y, visited):
+                return True
         return False
 
     def prune_leaves(self, vars: Set[str]) -> None:
@@ -361,22 +362,6 @@ class BayesNet:
         for var in Z:
             for child in self.get_children(var):
                 self.del_edge((var, child))
-
-        # # TODO remove creating edges between parents and Z removal
-        # # moralize by marrying parents (making an edge between them)
-        # for var in self.get_all_variables():
-        #     parents = self.get_node_parents(var)
-        #     if len(parents) > 1:
-        #         for i in range(len(parents) - 1):
-        #             self.add_edge((parents[i], parents[i+1]))
-        
-        # remove givens: delete all edges and nodes of Z
-        for var in Z:
-            for parent in self.get_node_parents(var):
-                self.del_edge((parent, var))
-            self.del_var(var)
-
-        # self.draw_structure()
 
         # d-seperated if X and Y are NOT connected
         return not self.is_connected(X, Y)

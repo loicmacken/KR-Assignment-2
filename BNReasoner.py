@@ -127,9 +127,5 @@ if __name__ =='__main__':
 
         # test d-seperation
         for X, Y, Z, result in data['d_sep']:
-            try:
-                # print(f'Testing d-sep of {prob}:\n X, Y, Z = {X}, {Y}, {Z}\n result = {result}')
-                assert reasoner.d_seperation(X, Y, Z) == result
-            except AssertionError:
-                print(f'Error when testing d-sep of {prob}: X, Y, Z = {X}, {Y}, {Z}; result = {result}')
+            assert reasoner.d_seperation(X, Y, Z) == result
         

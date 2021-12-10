@@ -27,7 +27,7 @@ def write_dog_problem():
                 [F],
                 [B],
                 [D, H],
-                True
+                False
             ],
             [
                 [H],
@@ -66,13 +66,13 @@ def write_lecture_example():
                 [P],
                 [S],
                 [W],
-                False
+                True
             ],
             [
                 [P],
                 [R],
                 [G, W],
-                True
+                False
             ]
         ]
     }
@@ -93,7 +93,7 @@ def write_lecture_example2():
                 [Y],
                 [I],
                 [J, O],
-                True
+                False
             ],
             [
                 [J],
@@ -105,13 +105,13 @@ def write_lecture_example2():
                 [X],
                 [Y],
                 [J, I],
-                False
+                True
             ],
             [
                 [O],
                 [I],
                 [X],
-                True
+                False
             ]
         ]
     }
