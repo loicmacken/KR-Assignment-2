@@ -146,7 +146,7 @@ class BayesNet:
         compat_indices = cpt[var_names] == instantiation[var_names].values
         compat_indices = [all(x[1]) for x in compat_indices.iterrows()]
         compat_instances = cpt.loc[compat_indices]
-        return compat_instances
+        return compat_instances.reset_index(drop=True)
 
     def update_cpt(self, variable: str, cpt: pd.DataFrame) -> None:
         """
@@ -296,13 +296,18 @@ class BayesNet:
         return False
 
     def prune_leaves(self, vars: Set[str]) -> None:
+        """
+        """
         while(True):
             leaves: Set[str] = set(self.get_leaf_nodes())
+            # set difference of leaves and vars, i.e. the leaves that are not in vars
             leaves_to_delete = leaves - vars
 
+            # no more leaves to delete: return
             if not leaves_to_delete:
                 return
 
+            # delete leaf
             for leaf in leaves_to_delete:
                 self.del_var(leaf)
 
@@ -344,13 +349,15 @@ class BayesNet:
         # d-seperated if X and Y are NOT connected
         return not self.is_connected(X, Y)
 
-    def min_degree(self, X: List[str]) -> List[str]:
+    def min_degree(self) -> List[str]:
         """
         """
         G = self.get_interaction_graph()
         pi = []
+        X = self.get_all_variables()
 
-        for i in range(len(X)):
+        len_X = len(X)
+        for i in range(len_X):
             var = ''
             min_val = 1000
 
@@ -358,34 +365,35 @@ class BayesNet:
             for n, nbrdict in G.adjacency():
                 if len(nbrdict) < min_val:
                     var = n
-                    # TODO you should also add this min_val = len(nbrdict)
+                    min_val = len(nbrdict)
 
             # add an edge between every pair of non-adjacent neighbors of pi in G
             neighbors = list(G.neighbors(var))
             for node in neighbors:
                 for neighbor in neighbors:
-                    print(neighbor)
                     if node == neighbor:
                         continue
                     if not (G.has_edge(node, neighbor) or G.has_edge(neighbor, node)):
                         G.add_edge(node, neighbor)
+            print(var)
 
             pi.append(var)
 
             # delete variable pi from G and from X
             G.remove_node(var)
-            # TODO iterate in a copy of parameter X or in the reversed X, removing while iterating -> skips variables (3 instead of 5 loops)
             X.remove(var)
 
         return pi
 
-    def min_fill(self, X: List[str]) -> List[str]:
+    def min_fill(self) -> List[str]:
         """
         """
         G = self.get_interaction_graph()
         pi = []
+        X = self.get_all_variables()
 
-        for i in range(len(X)):
+        len_X = len(X)
+        for i in range(len_X):
             min_var = ''
             min_edges = 1000
             for var in X:
@@ -437,6 +445,40 @@ class BayesNet:
                 cpt = self.get_compatible_instantiations_table(pd.Series(e), cpt)
                 self.update_cpt(child, cpt)
 
+    def sum_out(self, cpt: pd.DataFrame, y: str) -> pd.DataFrame:
+        """
+        """
+        print(cpt)
+
+        if y not in cpt.columns:
+            return cpt
+
+        series_true = pd.Series(index=[y], data=[True])
+        cpt_true = self.get_compatible_instantiations_table(series_true, cpt)
+
+        print(cpt_true)
+
+        series_false = pd.Series(index=[y], data=[False])
+        cpt_false = self.get_compatible_instantiations_table(series_false, cpt)
+
+        print(cpt_false)
+
+        cpt_out = cpt_true.copy().drop(columns=[y])
+
+        sum_cols = cpt_true['p'] + cpt_false['p']
+        cpt_out['p'] = sum_cols
+
+        print(cpt_out)
+        
+        return cpt_out
+
+    def mult(self, cpt: pd.DataFrame) -> pd.DataFrame:
+        """
+        """
+        pass
+
+
+
     def marginal_dist(self, Q: List[str], pi: List[str], e: List[tuple[str, bool]]): # TODO: add types
         """
         Computes the marginal distribution P(Q|e)
@@ -448,9 +490,9 @@ class BayesNet:
 
         :return: TODO
         """
-        cpts = self.get_all_cpts()
-        for c in cpts:
-            print(cpts)
+        # cpts = self.get_all_cpts()
+        # for c in cpts:
+        #     print(cpts)
 
         # update CTPs based on evidence, if it's not empty
         if e:
@@ -459,9 +501,13 @@ class BayesNet:
                 cpt = self.get_compatible_instantiations_table(pd.Series(e), cpt)
                 self.update_cpt(var, cpt)
 
-        cpts = self.get_all_cpts()
-        for c in cpts:
-            print(cpts)
+        # cpts = self.get_all_cpts()
+        # for c in cpts:
+        #     print(cpts)
+        for var in pi:
+            cpt = self.get_cpt(var)
+            # TODO multiplication of factors
+        # TODO summing out of factors
 
         
             
