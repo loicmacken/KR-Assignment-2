@@ -139,5 +139,39 @@
                 "hear-bark"
             ]
         ]
+    ],
+    "net_prune": [
+        [
+            [
+                "light-on",
+                "family-out",
+                "dog-out"
+            ],
+            [
+                [
+                    "bowel-problem",
+                    true
+                ]
+            ],
+            [],
+            []
+        ],
+        [
+            [
+                "family-out"
+            ],
+            [
+                [
+                    "hear-bark",
+                    false
+                ],
+                [
+                    "bowel-problem",
+                    true
+                ]
+            ],
+            [],
+            []
+        ]
     ]
 }

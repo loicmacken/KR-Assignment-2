@@ -3,6 +3,7 @@ import json
 d_sep = 'd_sep'
 min_deg = 'min_degree'
 min_fill = 'min_fill'
+net_prune = 'net_prune'
 
 def write_dog_problem():
     F = 'family-out'
@@ -64,6 +65,25 @@ def write_dog_problem():
             [
                 [F, B, L, D, H],
                 [B, L, F, D, H]
+            ]
+        ],
+        net_prune: [
+            [
+                [L, F, D],
+                [
+                    [B, True]
+                ],
+                [],
+                []
+            ],
+            [
+                [F],
+                [
+                    [H, False],
+                    [B, True]
+                ],
+                [],
+                []
             ]
         ]
     }

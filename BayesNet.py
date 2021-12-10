@@ -516,10 +516,18 @@ class BayesNet:
         # then prune edges outgoing from E
         for parent, child in self.get_all_edges():
             if parent in E:
+                # update CPT
                 instantiation = pd.Series({parent: evidence[parent]})
                 cpt = self.get_cpt(child)
                 new_cpt = self.get_compatible_instantiations_table(instantiation, cpt)
                 self.update_cpt(child, new_cpt)
+
+                # remove edge
+                self.del_edge((parent, child))
+
+        self.draw_structure()
+        print(self.structure.nodes)
+        print(self.structure.edges)
 
     def create_factor(self, X: Set[str], value: List):
         """
