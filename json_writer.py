@@ -3,6 +3,8 @@ import json
 d_sep = 'd_sep'
 min_deg = 'min_degree'
 min_fill = 'min_fill'
+net_prune = 'net_prune'
+mar_dist = 'marginal_distrib'
 
 def write_dog_problem():
     F = 'family-out'
@@ -65,6 +67,47 @@ def write_dog_problem():
                 [F, B, L, D, H],
                 [B, L, F, D, H]
             ]
+        ],
+        net_prune: [
+            [
+                [L, F, D],
+                [
+                    [B, True]
+                ],
+                [L, B, D, F],
+                [
+                    [F, L], 
+                    [F, D]
+                ]
+            ],
+            [
+                [F],
+                [
+                    [H, False],
+                    [B, True]
+                ],
+                [B, D, H, F],
+                [
+                    [D, H],
+                    [F, D]
+                ]
+            ]
+        ],
+        mar_dist: [
+            [
+                [F, L],
+                [
+                    [B, True]
+                ],
+                [H, D],
+                [0.799]
+            ],
+            [
+                [F, L, D],
+                [],
+                [B, H],
+                [0.560]
+            ]
         ]
     }
 
@@ -118,6 +161,62 @@ def write_lecture_example():
                 [W, P, G, R, S],
                 [S, W, P, G, R]
             ]
+        ],
+        min_fill: [
+            [
+                [W, R, S],
+                [W, S, R]
+            ],
+            [
+                [P, G, R, S],
+                [G, P, S, R]
+            ],
+            [
+                [W, P, G, R, S],
+                [W, P, G, R, S]
+            ]
+        ],
+        net_prune: [
+            [
+                [W, P, G],
+                [
+                    [R, True]
+                ],
+                [W, P, R, G],
+                [
+                    [W, P], 
+                    [W, R],
+                    [P, G]
+                ]
+            ],
+            [
+                [P],
+                [
+                    [W, False],
+                    [S, False]
+                ],
+                [W, P, R, S],
+                [
+                    [R, S]
+                ]
+            ]
+        ],
+        mar_dist: [
+            [
+                [W, R],
+                [
+                    [P, True],
+                    [S, False]
+                ],
+                [G],
+                [0.000]
+            ],
+            [
+                [P, R, G],
+                [],
+                [S, W],
+                [0.120]
+            ]
         ]
     }
 
@@ -170,6 +269,61 @@ def write_lecture_example2():
             [
                 [J, I, Y, X, O],
                 [I, J, Y, X, O]
+            ]
+        ],
+        min_fill: [
+            [
+                [I, Y, X, O],
+                [I, O, Y, X]
+            ],
+            [
+                [J, I, X, O],
+                [I, J, X, O]
+            ],
+            [
+                [J, I, Y, X, O],
+                [I, J, Y, X, O]
+            ]
+        ],
+        net_prune: [
+            [
+                [J, Y],
+                [
+                    [I, False]
+                ],
+                [I, J, Y],
+                [
+                    [J, Y]
+                ]
+            ],
+            [
+                [O],
+                [
+                    [J, True],
+                    [X, False]
+                ],
+                [I, J, Y, X, O],
+                [
+                    [I, X], 
+                    [Y, O]
+                ]
+            ]
+        ],
+        mar_dist: [
+            [
+                [J, I],
+                [
+                    [Y, True],
+                    [O, False]
+                ],
+                [X],
+                [0.000]
+            ],
+            [
+                [J, Y, O],
+                [],
+                [I, X],
+                [0.005]
             ]
         ]
     }
