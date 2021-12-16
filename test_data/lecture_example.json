@@ -138,5 +138,106 @@
                 "Slippery Road?"
             ]
         ]
+    ],
+    "net_prune": [
+        [
+            [
+                "Winter?",
+                "Sprinkler?",
+                "Wet Grass?"
+            ],
+            [
+                [
+                    "Rain?",
+                    true
+                ]
+            ],
+            [
+                "Winter?",
+                "Sprinkler?",
+                "Rain?",
+                "Wet Grass?"
+            ],
+            [
+                [
+                    "Winter?",
+                    "Sprinkler?"
+                ],
+                [
+                    "Winter?",
+                    "Rain?"
+                ],
+                [
+                    "Sprinkler?",
+                    "Wet Grass?"
+                ]
+            ]
+        ],
+        [
+            [
+                "Sprinkler?"
+            ],
+            [
+                [
+                    "Winter?",
+                    false
+                ],
+                [
+                    "Slippery Road?",
+                    false
+                ]
+            ],
+            [
+                "Winter?",
+                "Sprinkler?",
+                "Rain?",
+                "Slippery Road?"
+            ],
+            [
+                [
+                    "Rain?",
+                    "Slippery Road?"
+                ]
+            ]
+        ]
+    ],
+    "marginal_distrib": [
+        [
+            [
+                "Winter?",
+                "Rain?"
+            ],
+            [
+                [
+                    "Sprinkler?",
+                    true
+                ],
+                [
+                    "Slippery Road?",
+                    false
+                ]
+            ],
+            [
+                "Wet Grass?"
+            ],
+            [
+                0.0
+            ]
+        ],
+        [
+            [
+                "Sprinkler?",
+                "Rain?",
+                "Wet Grass?"
+            ],
+            [],
+            [
+                "Slippery Road?",
+                "Winter?"
+            ],
+            [
+                0.12
+            ]
+        ]
     ]
 }

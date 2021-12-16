@@ -115,8 +115,11 @@ if __name__ =='__main__':
 
     # TESTING -------------------------
 
-    # test_problems = ['dog_problem', 'lecture_example', 'lecture_example2']
-    test_problems = ['dog_problem']
+    test_problems = ['dog_problem', 'lecture_example', 'lecture_example2']
+    # test_problems = ['lecture_example2']
+
+    # delta value for accuracy in floating point outputs, i.e. the output will have to be within +/- one delta of the desired result
+    DELTA = 0.01
 
     for prob in test_problems:
         # create a reasoner object based on the problem BIFXML file
@@ -141,10 +144,30 @@ if __name__ =='__main__':
 
         # test network pruning
         for Q, e, vars, edges in data['net_prune']:
-            try:
-                reasoner.bn.net_prune(set(Q), e)
-                assert reasoner.bn.get_all_variables() == vars
-                assert reasoner.bn.get_all_edges() == edges
-            except AssertionError:
-                print(f'ERROR, vars = {vars}, edges = {edges}')
+            temp_bn = copy.deepcopy(reasoner.bn)
+            assert isinstance(temp_bn, BayesNet)
+
+            e_list: List[Tuple] = list(tuple(x) for x in e)
+            edge_list: List[Tuple] = list(tuple(x) for x in edges)
+            
+            temp_bn.net_prune(set(Q), e)
+            # verify whether the pruned network has the same variables as the computed test data
+            assert temp_bn.get_all_variables() == vars
+            assert temp_bn.get_all_edges() == edge_list
+
+        # test marginal distributions
+        for Q, e, pi, result in data['marginal_distrib']:
+            e_list: List[Tuple] = list(tuple(x) for x in e)
+
+            # the output CPT from the marginal distribution
+            df = reasoner.marginal_dist(Q, e_list, pi)  # type: ignore
+
+            # the last row, which is where all variables are true
+            output = df.iloc[-1].loc['p']
+
+            result_float = float(result[0])
+
+            # test whether the probability value of the last row is within a delta margin of the test value
+            assert (result_float - DELTA) < output < (result_float + DELTA)
+
         
