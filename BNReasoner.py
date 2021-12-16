@@ -113,6 +113,9 @@ if __name__ =='__main__':
     # dog_problem.network_prune(['family-out'],[('dog-out', True), ('hear-bark', False)])
     # print(lecture_Example.marginal_dist(['Slippery Road?',  'Wet Grass?'], [('Winter?', True), ('Sprinkler?', False)], ['Winter?', 'Rain?', 'Sprinkler?']))
 
+    disease_problem = BNReasoner('testing\\BN_diseases.BIFXML')
+    disease_problem.bn.draw_structure()
+    
     # TESTING -------------------------
 
     # test_problems = ['dog_problem', 'lecture_example', 'lecture_example2']
