@@ -113,7 +113,7 @@ if __name__ =='__main__':
     # print(dog_problem.ordering_min_fill())
     dog_problem.network_prune(['family-out'],[('dog-out', True), ('hear-bark', False)])
     print(lecture_Example.marginal_dist(['Slippery Road?',  'Wet Grass?'], [('Winter?', True), ('Sprinkler?', False)], ['Winter?', 'Rain?', 'Sprinkler?']))
-    print(lecture_Example_2.map_and_mpe(M=['I',  'J'], E=[('O', False)]))
+    print(lecture_Example_2.map_and_mpe(M=['I',  'J'], E=[('O', True)]))
 
     # create graphs
     # bn = BayesNet()
