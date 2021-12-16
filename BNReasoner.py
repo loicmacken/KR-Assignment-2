@@ -132,13 +132,19 @@ if __name__ =='__main__':
             assert reasoner.d_seperation(X, Y, Z) == result
 
         # test min-degree ordering
-        for X, output in data['min_degree']:
-            assert reasoner.ordering_min_degree(X) == output
+        for X, result in data['min_degree']:
+            assert reasoner.ordering_min_degree(X) == result
 
         # test min-fill ordering
-        for X, output in data['min_fill']:
+        for X, result in data['min_fill']:
+            assert reasoner.ordering_min_fill(X) == result
+
+        # test network pruning
+        for Q, e, vars, edges in data['net_prune']:
             try:
-                assert reasoner.ordering_min_fill(X) == output
+                reasoner.bn.net_prune(set(Q), e)
+                assert reasoner.bn.get_all_variables() == vars
+                assert reasoner.bn.get_all_edges() == edges
             except AssertionError:
-                print(f'ERROR: {X} -> {output}')
+                print(f'ERROR, vars = {vars}, edges = {edges}')
         

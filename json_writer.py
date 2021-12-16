@@ -3,6 +3,7 @@ import json
 d_sep = 'd_sep'
 min_deg = 'min_degree'
 min_fill = 'min_fill'
+net_prune = 'net_prune'
 
 def write_dog_problem():
     F = 'family-out'
@@ -65,6 +66,25 @@ def write_dog_problem():
                 [F, B, L, D, H],
                 [B, L, F, D, H]
             ]
+        ],
+        net_prune: [
+            [
+                [L, F, D],
+                [
+                    [B, True]
+                ],
+                [],
+                []
+            ],
+            [
+                [F],
+                [
+                    [H, False],
+                    [B, True]
+                ],
+                [],
+                []
+            ]
         ]
     }
 
@@ -118,7 +138,21 @@ def write_lecture_example():
                 [W, P, G, R, S],
                 [S, W, P, G, R]
             ]
-        ]
+        ],
+        min_fill: [
+            [
+                [W, R, S],
+                [W, S, R]
+            ],
+            [
+                [P, G, R, S],
+                [G, P, S, R]
+            ],
+            [
+                [W, P, G, R, S],
+                [W, P, G, R, S]
+            ]
+        ],
     }
 
     with open('test_data\\lecture_example.json', 'w') as infile:
@@ -159,6 +193,20 @@ def write_lecture_example2():
             ]
         ],
         min_deg: [
+            [
+                [I, Y, X, O],
+                [I, O, Y, X]
+            ],
+            [
+                [J, I, X, O],
+                [I, J, X, O]
+            ],
+            [
+                [J, I, Y, X, O],
+                [I, J, Y, X, O]
+            ]
+        ],
+        min_fill: [
             [
                 [I, Y, X, O],
                 [I, O, Y, X]

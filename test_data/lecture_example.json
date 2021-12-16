@@ -94,5 +94,49 @@
                 "Rain?"
             ]
         ]
+    ],
+    "min_fill": [
+        [
+            [
+                "Winter?",
+                "Rain?",
+                "Slippery Road?"
+            ],
+            [
+                "Winter?",
+                "Slippery Road?",
+                "Rain?"
+            ]
+        ],
+        [
+            [
+                "Sprinkler?",
+                "Wet Grass?",
+                "Rain?",
+                "Slippery Road?"
+            ],
+            [
+                "Wet Grass?",
+                "Sprinkler?",
+                "Slippery Road?",
+                "Rain?"
+            ]
+        ],
+        [
+            [
+                "Winter?",
+                "Sprinkler?",
+                "Wet Grass?",
+                "Rain?",
+                "Slippery Road?"
+            ],
+            [
+                "Winter?",
+                "Sprinkler?",
+                "Wet Grass?",
+                "Rain?",
+                "Slippery Road?"
+            ]
+        ]
     ]
 }
