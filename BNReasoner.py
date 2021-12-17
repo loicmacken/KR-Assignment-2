@@ -195,3 +195,7 @@ if __name__ =='__main__':
 
             # test whether the probability value of the last row is within a delta margin of the test value
             assert (result_float - DELTA) < output < (result_float + DELTA)
+
+        # test MAP and MPE
+        for _ in data['map_and_mpe']:
+            pass
