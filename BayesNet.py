@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict, Set
+from typing import List, Tuple, Dict, Set, Callable
 import networkx as nx
 import matplotlib.pyplot as plt
 from pgmpy.readwrite import XMLBIFReader
@@ -366,6 +366,11 @@ class BayesNet:
         # d-seperated if X and Y are NOT connected
         return not self.is_connected(X, Y)
 
+    def random_order(self, X: List[str]) -> List[str]:
+        """
+        """
+        return X
+
     def min_degree(self, X: List[str]) -> List[str]:
         """
         """
@@ -568,11 +573,12 @@ class BayesNet:
             
         return self.mult_factors(list(cpts_e.values()))
 
-    def map_and_mpe(self, e: List[tuple[str, bool]], M: List[str]=[]):
+    def map_and_mpe(self, order_function: Callable, e: List[tuple[str, bool]], M: List[str]=[]) -> pd.DataFrame:
         """
         Computes the marginal distribution P(Q|e)
         given the query variables Q and possibly empty evidence e
 
+        :param order_function: function for ordering parameters
         :param M: variables in Network that we do not want to eliminate or None MPE is implement
         :param e: evidence
 
@@ -586,7 +592,7 @@ class BayesNet:
         self.net_prune(set(M), e)
         self.draw_structure()
         print(list(set(Q) - set(M)))
-        pi = self.min_degree(list(set(Q) - set(M))) + self.min_degree(M)
+        pi = order_function(list(set(Q) - set(M))) + order_function(M)
         print(pi, 'pi')
         cpts = self.get_all_cpts()
         cpts_e = {}

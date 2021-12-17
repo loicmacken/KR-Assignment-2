@@ -1,9 +1,14 @@
-from typing import Union, List, Tuple, Dict, Set
+from typing import Union, List, Tuple, Dict, Set, Callable
 from BayesNet import BayesNet
+from enum import Enum
 import pandas as pd
-import networkx as nx
 import copy
 import json
+
+class Heuristics(Enum):
+    MIN_ORDER='MIN_ORDER'
+    MIN_FILL='MIN_ORDER'
+    RANDOM='RANDOM'
 
 class BNReasoner:
     def __init__(self, net: Union[str, BayesNet]):
@@ -89,11 +94,12 @@ class BNReasoner:
 
         return temp_bn.marginal_distrib(Q, e, pi) # type: ignore
 
-    def map_and_mpe(self, e: List[tuple[str, bool]], M: List[str]=[]): # TODO: add types
+    def map_and_mpe(self, order_function: Heuristics, e: List[tuple[str, bool]], M: List[str]=[]): # TODO: add types
         """
         Computes the most likely instantiations of M
         given possibly empty set of query variables M and an evidence E
 
+        :param order_function: function for ordering parameters
         :param M: query variables
         :param E: evidence
 
@@ -101,7 +107,11 @@ class BNReasoner:
         """
         temp_bn = copy.deepcopy(self.bn)
 
-        return temp_bn.map_and_mpe(e, M)
+        if Heuristics.MIN_FILL == order_function: order=temp_bn.min_fill
+        elif Heuristics.MIN_ORDER == order_function: order=temp_bn.min_degree
+        else: order=temp_bn.random_order
+
+        return temp_bn.map_and_mpe(order, e, M)
 
 
 if __name__ =='__main__':
@@ -113,8 +123,8 @@ if __name__ =='__main__':
     # print(dog_problem.ordering_min_fill())
     dog_problem.network_prune(['family-out'],[('dog-out', True), ('hear-bark', False)])
     print(lecture_Example.marginal_dist(['Slippery Road?',  'Wet Grass?'], [('Winter?', True), ('Sprinkler?', False)], ['Winter?', 'Rain?', 'Sprinkler?']))
-    print(lecture_Example_2.map_and_mpe(e=[('O', True)], M=['I',  'J']))
-    print(lecture_Example_2.map_and_mpe(e=[('O', False), ('J', True)]))
+    print(lecture_Example_2.map_and_mpe(order_function=Heuristics.MIN_ORDER, e=[('O', True)], M=['I',  'J']))
+    print(lecture_Example_2.map_and_mpe(order_function=Heuristics.MIN_ORDER, e=[('O', False), ('J', True)]))
 
     # create graphs
     # bn = BayesNet()
@@ -185,5 +195,3 @@ if __name__ =='__main__':
 
             # test whether the probability value of the last row is within a delta margin of the test value
             assert (result_float - DELTA) < output < (result_float + DELTA)
-
-        
