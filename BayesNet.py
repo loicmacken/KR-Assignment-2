@@ -531,23 +531,12 @@ class BayesNet:
         Y = X - set([Z]) # e.g BC
         new_f = pd.DataFrame()
 
-        print(f_x, 'f_x', Y, Z)
-        # print(f_x.groupby(list(Y), as_index = False).apply(print), 'grouped')
         if len(Y) > 0:
-            new_f: pd.DataFrame = f_x.groupby(list(Y), as_index = False)['p'].max()
-            # new_f: pd.DataFrame = f_x.loc[f_x.groupby(list(Y))['p'].idxmax()]
-            max_value = f_x.loc[f_x.groupby(list(Z))['p'].idxmax()][Z]
-            print(max_value)
+            new_f: pd.DataFrame = f_x.loc[f_x.groupby(list(Z))['p'].idxmax()].reset_index(drop=True)
         else:
-            new_f: pd.DataFrame = f_x.loc[f_x['p'].idxmax()]
-            max_value = new_f[Z]
+            new_f: pd.DataFrame = f_x.loc[f_x['p'].idxmax()].reset_index(drop=True)
 
-        # new_f: pd.DataFrame = f_x.loc[f_x.groupby(list(Y), as_index = False).p.idxmax()]
-        print('egain')
-        print( new_f)
-        value = { Z: max_value}
-
-        return new_f, value
+        return new_f
 
     def marginal_distrib(self, Q: List[str],  e: List[tuple[str, bool] or None], pi: List[str]) -> pd.DataFrame:
         """
@@ -579,7 +568,7 @@ class BayesNet:
             
         return self.mult_factors(list(cpts_e.values()))
 
-    def map_and_mpe(self, M: List[str] or None, e: List[tuple[str, bool]]):
+    def map_and_mpe(self, e: List[tuple[str, bool]], M: List[str]=[]):
         """
         Computes the marginal distribution P(Q|e)
         given the query variables Q and possibly empty evidence e
@@ -591,7 +580,7 @@ class BayesNet:
         """
         Q = self.get_all_variables()
 
-        if M is None:
+        if len(M) == 0:
             M = Q
 
         self.net_prune(set(M), e)
@@ -601,7 +590,6 @@ class BayesNet:
         print(pi, 'pi')
         cpts = self.get_all_cpts()
         cpts_e = {}
-        result = []
 
         for key in cpts:
             cpts_e.update({key: self.reduce_factor(pd.Series(dict(e)), cpts[key])})
@@ -609,15 +597,11 @@ class BayesNet:
         for i in range(len(pi)):
             f_pi, fpi_keys = self.get_cpts_x(pi[i], cpts_e)
             fi = self.mult_factors(f_pi)
-            print(pi[i])
-            print(fi)
             if pi[i] in M:
-                fi, value = self.max_out(fi, pi[i])
-                result.append(value)
+                fi = self.max_out(fi, pi[i])
             else:
                 fi = self.sum_out(fi, pi[i])
 
             cpts_e = self.replace_cpts(cpts_e, fpi_keys, {pi[i]: fi})
             
-        print('cpts_e', cpts_e, result)
         return self.mult_factors(list(cpts_e.values()))

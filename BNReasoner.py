@@ -89,7 +89,7 @@ class BNReasoner:
 
         return temp_bn.marginal_distrib(Q, e, pi) # type: ignore
 
-    def map_and_mpe(self, M: List[str] or None, E: List[tuple[str, bool]]): # TODO: add types
+    def map_and_mpe(self, e: List[tuple[str, bool]], M: List[str]=[]): # TODO: add types
         """
         Computes the most likely instantiations of M
         given possibly empty set of query variables M and an evidence E
@@ -101,7 +101,7 @@ class BNReasoner:
         """
         temp_bn = copy.deepcopy(self.bn)
 
-        return temp_bn.map_and_mpe(M, E)
+        return temp_bn.map_and_mpe(e, M)
 
 
 if __name__ =='__main__':
@@ -113,7 +113,8 @@ if __name__ =='__main__':
     # print(dog_problem.ordering_min_fill())
     dog_problem.network_prune(['family-out'],[('dog-out', True), ('hear-bark', False)])
     print(lecture_Example.marginal_dist(['Slippery Road?',  'Wet Grass?'], [('Winter?', True), ('Sprinkler?', False)], ['Winter?', 'Rain?', 'Sprinkler?']))
-    print(lecture_Example_2.map_and_mpe(M=['I',  'J'], E=[('O', True)]))
+    print(lecture_Example_2.map_and_mpe(e=[('O', True)], M=['I',  'J']))
+    print(lecture_Example_2.map_and_mpe(e=[('O', False), ('J', True)]))
 
     # create graphs
     # bn = BayesNet()
@@ -123,8 +124,10 @@ if __name__ =='__main__':
     # bn.draw_graph(interaction_graph)
     # print(nx.d_separated(bn.structure, {'family-out'}, {'hear-bark'}, {'dog-out'}))
 
-    disease_problem = BNReasoner('testing\\BN_diseases.BIFXML')
-    disease_problem.bn.draw_structure()
+    bn = BayesNet()
+    bn.load_from_bifxml("testing/diseases.BIFXML")
+    bn.draw_structure()
+    # disease_problem = BNReasoner('testing/diseases.BIFXML')
     
     # TESTING -------------------------
 
