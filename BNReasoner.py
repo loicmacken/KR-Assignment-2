@@ -114,9 +114,11 @@ class BNReasoner:
 
         return temp_bn.map_and_mpe(order, e, M)
 
-    # def create_random_bn(self) -> None:
-    #     bn = BayesNet()
-    #     return bn.generate_random(10)
+    def create_random_bn(self) -> None:
+        temp_bn = copy.deepcopy(self.bn)
+
+        return temp_bn.generate_random(6)
+
 def task_2() -> None:
     directory = "./test_data/task_2"
 
@@ -133,92 +135,104 @@ def task_2() -> None:
             
 
 if __name__ =='__main__':
-    # bn = BayesNet()
-    # bn.generate_random(10)
-    # bn.draw_structure()
-    task_2()
-
-    lecture_Example = BNReasoner("testing/lecture_Example.BIFXML")
-    lecture_Example_2 = BNReasoner("testing/lecture_Example2.BIFXML")
-    dog_problem = BNReasoner("testing/dog_problem.BIFXML")
-    print(dog_problem.d_seperation(['family-out'], ['hear-bark'], ['dog-out']))
-    # print(dog_problem.ordering_min_degree())
-    # print(dog_problem.ordering_min_fill())
-    dog_problem.network_prune(['family-out'],[('dog-out', True), ('hear-bark', False)])
-    print(lecture_Example.marginal_dist(['Slippery Road?',  'Wet Grass?'], [('Winter?', True), ('Sprinkler?', False)], ['Winter?', 'Rain?', 'Sprinkler?']))
-    print(lecture_Example_2.map_and_mpe(order_function=Heuristics.MIN_ORDER, e=[('O', True)], M=['I',  'J']))
-    print(lecture_Example_2.map_and_mpe(order_function=Heuristics.MIN_ORDER, e=[('O', False), ('J', True)]))
-
-    # create graphs
-    # bn = BayesNet()
-    # bn.load_from_bifxml("testing\\dog_problem.BIFXML")
-    # interaction_graph = bn.get_interaction_graph()
-    # bn.draw_structure()
-    # bn.draw_graph(interaction_graph)
-    # print(nx.d_separated(bn.structure, {'family-out'}, {'hear-bark'}, {'dog-out'}))
-
     bn = BayesNet()
-    bn.load_from_bifxml("testing/diseases.BIFXML")
-    bn.draw_structure()
-    # disease_problem = BNReasoner('testing/diseases.BIFXML')
+    bn.generate_random(5, n_roots=2, degree=3)
+    bn.draw_structure_sample()
+    int_grah = bn.get_interaction_graph()
+    bn.draw_graph(int_grah)
+    print(bn.get_all_cpts())
+    bn_2 = BayesNet()
+    bn_2.generate_random()
+    bn_2.draw_structure_sample()
+    print(bn_2.get_all_cpts())
+    bn_3 = BayesNet()
+    bn_3.generate_random(20, n_roots=4, degree=3)
+    bn_3.draw_structure_sample()
+    print(bn_3.get_all_cpts())
+
+    # task_2()
+
+    # lecture_Example = BNReasoner("testing/lecture_Example.BIFXML")
+    # lecture_Example_2 = BNReasoner("testing/lecture_Example2.BIFXML")
+    # dog_problem = BNReasoner("testing/dog_problem.BIFXML")
+    # print(dog_problem.d_seperation(['family-out'], ['hear-bark'], ['dog-out']))
+    # # print(dog_problem.ordering_min_degree())
+    # # print(dog_problem.ordering_min_fill())
+    # dog_problem.network_prune(['family-out'],[('dog-out', True), ('hear-bark', False)])
+    # print(lecture_Example.marginal_dist(['Slippery Road?',  'Wet Grass?'], [('Winter?', True), ('Sprinkler?', False)], ['Winter?', 'Rain?', 'Sprinkler?']))
+    # print(lecture_Example_2.map_and_mpe(order_function=Heuristics.MIN_ORDER, e=[('O', True)], M=['I',  'J']))
+    # print(lecture_Example_2.map_and_mpe(order_function=Heuristics.MIN_ORDER, e=[('O', False), ('J', True)]))
+
+    # # create graphs
+    # # bn = BayesNet()
+    # # bn.load_from_bifxml("testing\\dog_problem.BIFXML")
+    # # interaction_graph = bn.get_interaction_graph()
+    # # bn.draw_structure()
+    # # bn.draw_graph(interaction_graph)
+    # # print(nx.d_separated(bn.structure, {'family-out'}, {'hear-bark'}, {'dog-out'}))
+
+    # bn = BayesNet()
+    # bn.load_from_bifxml("testing/diseases.BIFXML")
+    # bn.draw_structure()
+    # # disease_problem = BNReasoner('testing/diseases.BIFXML')
     
-    # TESTING -------------------------
+    # # TESTING -------------------------
 
-    test_problems = ['dog_problem', 'lecture_example', 'lecture_example2']
-    # test_problems = ['lecture_example2']
+    # test_problems = ['dog_problem', 'lecture_example', 'lecture_example2']
+    # # test_problems = ['lecture_example2']
 
-    # delta value for accuracy in floating point outputs, i.e. the output will have to be within +/- one delta of the desired result
-    DELTA = 0.01
+    # # delta value for accuracy in floating point outputs, i.e. the output will have to be within +/- one delta of the desired result
+    # DELTA = 0.01
 
-    for prob in test_problems:
-        # create a reasoner object based on the problem BIFXML file
-        reasoner = BNReasoner('testing\\' + prob + '.BIFXML')
+    # for prob in test_problems:
+    #     # create a reasoner object based on the problem BIFXML file
+    #     reasoner = BNReasoner('testing\\' + prob + '.BIFXML')
 
-        # get test data from json
-        data = {}
-        with open('test_data\\' + prob + '.json', 'r') as infile:
-            data = json.load(infile)
+    #     # get test data from json
+    #     data = {}
+    #     with open('test_data\\' + prob + '.json', 'r') as infile:
+    #         data = json.load(infile)
 
-        # test d-seperation
-        for X, Y, Z, result in data['d_sep']:
-            assert reasoner.d_seperation(X, Y, Z) == result
+    #     # test d-seperation
+    #     for X, Y, Z, result in data['d_sep']:
+    #         assert reasoner.d_seperation(X, Y, Z) == result
 
-        # test min-degree ordering
-        for X, result in data['min_degree']:
-            assert reasoner.ordering_min_degree(X) == result
+    #     # test min-degree ordering
+    #     for X, result in data['min_degree']:
+    #         assert reasoner.ordering_min_degree(X) == result
 
-        # test min-fill ordering
-        for X, result in data['min_fill']:
-            assert reasoner.ordering_min_fill(X) == result
+    #     # test min-fill ordering
+    #     for X, result in data['min_fill']:
+    #         assert reasoner.ordering_min_fill(X) == result
 
-        # test network pruning
-        for Q, e, vars, edges in data['net_prune']:
-            temp_bn = copy.deepcopy(reasoner.bn)
-            assert isinstance(temp_bn, BayesNet)
+    #     # test network pruning
+    #     for Q, e, vars, edges in data['net_prune']:
+    #         temp_bn = copy.deepcopy(reasoner.bn)
+    #         assert isinstance(temp_bn, BayesNet)
 
-            e_list: List[Tuple] = list(tuple(x) for x in e)
-            edge_list: List[Tuple] = list(tuple(x) for x in edges)
+    #         e_list: List[Tuple] = list(tuple(x) for x in e)
+    #         edge_list: List[Tuple] = list(tuple(x) for x in edges)
             
-            temp_bn.net_prune(set(Q), e)
-            # verify whether the pruned network has the same variables as the computed test data
-            assert temp_bn.get_all_variables() == vars
-            assert temp_bn.get_all_edges() == edge_list
+    #         temp_bn.net_prune(set(Q), e)
+    #         # verify whether the pruned network has the same variables as the computed test data
+    #         assert temp_bn.get_all_variables() == vars
+    #         assert temp_bn.get_all_edges() == edge_list
 
-        # test marginal distributions
-        for Q, e, pi, result in data['marginal_distrib']:
-            e_list: List[Tuple] = list(tuple(x) for x in e)
+    #     # test marginal distributions
+    #     for Q, e, pi, result in data['marginal_distrib']:
+    #         e_list: List[Tuple] = list(tuple(x) for x in e)
 
-            # the output CPT from the marginal distribution
-            df = reasoner.marginal_dist(Q, e_list, pi)  # type: ignore
+    #         # the output CPT from the marginal distribution
+    #         df = reasoner.marginal_dist(Q, e_list, pi)  # type: ignore
 
-            # the last row, which is where all variables are true
-            output = df.iloc[-1].loc['p']
+    #         # the last row, which is where all variables are true
+    #         output = df.iloc[-1].loc['p']
 
-            result_float = float(result[0])
+    #         result_float = float(result[0])
 
-            # test whether the probability value of the last row is within a delta margin of the test value
-            assert (result_float - DELTA) < output < (result_float + DELTA)
+    #         # test whether the probability value of the last row is within a delta margin of the test value
+    #         assert (result_float - DELTA) < output < (result_float + DELTA)
 
-        # test MAP and MPE
-        for _ in data['map_and_mpe']:
-            pass
+    #     # test MAP and MPE
+    #     for _ in data['map_and_mpe']:
+    #         pass

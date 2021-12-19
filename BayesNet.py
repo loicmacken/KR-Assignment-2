@@ -35,7 +35,7 @@ class BayesNet:
             raise Exception('The provided graph is not acyclic.')
 
     # GENERATE BN ------------------------------------------------------------------------------------------------
-    def generate_random(self, number: int) -> None:
+    def generate_random(self, number: int=10, n_roots: int=2, degree: int=3) -> None:
         """
         Generate a BayesNet 
         """
@@ -47,57 +47,44 @@ class BayesNet:
         # create edges and create cpts
         edges = []
         cpts = {}
-        for index, node in enumerate(variables):
-            start = 0
-            vars = [node]
-            nodes=variables[index+1:-1]
-            selected_nodes=nodes
-            if index < len(variables)-2:
+        index = len(variables) - 1
+        for node in reversed(variables):
+            vars=[]
+            nodes=variables[:index]
+            selected_nodes=[]
+            if index > n_roots:
                 start=1
-                print(index, len(variables)-2)
-                print('nodes', nodes, variables, start, index, len(variables)-1)
-                selected_nodes = random.sample(nodes, k=random.randint(start,int(len(nodes))))
+                max=round(int(index/2))
+                if max>4: max=4
+                k=random.randint(start,max)
+                selected_nodes = random.sample(nodes, k)
+            if index == n_roots:
+                selected_nodes = nodes
             
-            print(selected_nodes)
-            for edge in selected_nodes:
-                print('edge', edge)
-                edges.append([node,edge])
-                vars.append(edge)
+            for parent in selected_nodes:
+                edges.append([parent, node])
+                vars.append(parent)
+            
+            vars.append(node)
 
-            worlds = [list(i) + ['1'] for i in itertools.product([False, True], repeat=len(vars))]
-            columns = list(vars) + ['p']
-            cpts.update({node: pd.DataFrame(worlds, columns=columns)})
+            worlds = [list(i) for i in itertools.product([False, True], repeat=len(vars))]
+            columns = list(vars)
+            df = pd.DataFrame(worlds, columns=columns)            
 
-        print('variables', variables)
-        print('edges', edges)
-        print('cpts', cpts)
-        
+            # iterating through worlds within a variable
+            cpt = []
+            n_vars = 2**(len(vars)-1)
+            for i in range(n_vars):
+                # add the probability to each possible world
+                p = round(random.uniform(0,1), 2)
+                p_reverse = round(1-p, 2)
+                cpt.append(str(p))
+                cpt.append(str(p_reverse))
 
-        # # iterating through vars
-        # for key, values in bif_reader.get_values().items():
-        #     values = values.transpose().flatten() # type: ignore
-        #     n_vars = int(math.log2(len(values)))
-        #     worlds = [list(i) for i in itertools.product([False, True], repeat=n_vars)]
-        #     # create empty array
-        #     cpt = []
-        #     # iterating through worlds within a variable
-        #     for i in range(len(values)):
-        #         # add the probability to each possible world
-        #         worlds[i].append(values[i])
-        #         cpt.append(worlds[i])
+            df.insert(loc=len(df.columns), column='p', value=cpt)
+            cpts.update({node: df})
 
-        #     # determine column names
-        #     columns = bif_reader.get_parents()[key]
-        #     columns.reverse()
-        #     columns.append(key)
-        #     columns.append('p')
-        #     cpts[key] = pd.DataFrame(cpt, columns=columns)
-        
-        # # load vars
-        # variables = bif_reader.get_variables()
-        
-        # # load edges
-        # edges = bif_reader.get_edges()
+            index-=1
 
         self.create_bn(variables, edges, cpts) # type: ignore
 
@@ -252,6 +239,13 @@ class BayesNet:
         Visualize structure of the BN.
         """
         nx.draw(self.structure, with_labels=True, node_size=3000)
+        plt.show()
+
+    def draw_structure_sample(self) -> None:
+        """
+        Visualize structure of the BN.
+        """
+        nx.draw(self.structure, with_labels=True, node_size=200)
         plt.show()
 
     # BASIC HOUSEKEEPING METHODS ---------------------------------------------------------------------------------------
@@ -440,6 +434,8 @@ class BayesNet:
     def random_order(self, X: List[str]) -> List[str]:
         """
         """
+        # random.shuffle(X)
+
         return X
 
     def min_degree(self, X: List[str]) -> List[str]:
