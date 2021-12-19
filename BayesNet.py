@@ -35,7 +35,7 @@ class BayesNet:
             raise Exception('The provided graph is not acyclic.')
 
     # GENERATE BN ------------------------------------------------------------------------------------------------
-    def generate_random(self, number: int=10, n_roots: int=2, degree: int=3) -> None:
+    def generate_random(self, number: int=10, n_roots: int=2, max_edges: int=4, min_edges:int=2) -> tuple[int, int, int, int]:
         """
         Generate a BayesNet 
         """
@@ -47,24 +47,42 @@ class BayesNet:
         # create edges and create cpts
         edges = []
         cpts = {}
+        neighbors = {}
+        degree = 0
         index = len(variables) - 1
         for node in reversed(variables):
             vars=[]
+            if node not in neighbors: neighbors[node] = set()
             nodes=variables[:index]
             selected_nodes=[]
+
             if index > n_roots:
-                start=1
-                max=round(int(index/2))
-                if max>4: max=4
-                k=random.randint(start,max)
+                start = min_edges
+                k = start
+                max = round(int(index/2))
+                if max > max_edges: max=max_edges
+                if max > start: k=random.randint(start, max)
                 selected_nodes = random.sample(nodes, k)
             if index == n_roots:
                 selected_nodes = nodes
             
+            # update neighbors
+            neighbors[node].update(set(selected_nodes))
+
             for parent in selected_nodes:
                 edges.append([parent, node])
                 vars.append(parent)
-            
+
+                # set interaction neighbors
+                if parent not in neighbors: neighbors[parent] = set()
+                set_neighbors = selected_nodes + [node]
+                set_neighbors.remove(parent) 
+                neighbors[parent].update(set(set_neighbors))
+
+            # find degree
+            if len(neighbors[node]) > degree:
+                degree = len(neighbors[node])
+            print(neighbors, degree)
             vars.append(node)
 
             worlds = [list(i) for i in itertools.product([False, True], repeat=len(vars))]
@@ -87,6 +105,8 @@ class BayesNet:
             index-=1
 
         self.create_bn(variables, edges, cpts) # type: ignore
+
+        return degree, n_roots, max_edges, min_edges
 
     def load_from_bifxml(self, file_path: str) -> None:
         """
@@ -434,7 +454,7 @@ class BayesNet:
     def random_order(self, X: List[str]) -> List[str]:
         """
         """
-        # random.shuffle(X)
+        random.shuffle(X)
 
         return X
 
