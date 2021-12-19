@@ -5,6 +5,7 @@ min_deg = 'min_degree'
 min_fill = 'min_fill'
 net_prune = 'net_prune'
 mar_dist = 'marginal_distrib'
+map_mpe = 'map_and_mpe'
 
 def write_dog_problem():
     F = 'family-out'
@@ -107,6 +108,11 @@ def write_dog_problem():
                 [],
                 [B, H],
                 [0.560]
+            ]
+        ],
+        map_mpe: [
+            [
+
             ]
         ]
     }
@@ -217,6 +223,11 @@ def write_lecture_example():
                 [S, W],
                 [0.120]
             ]
+        ],
+        map_mpe: [
+            [
+                
+            ]
         ]
     }
 
@@ -324,6 +335,11 @@ def write_lecture_example2():
                 [],
                 [I, X],
                 [0.005]
+            ]
+        ],
+        map_mpe: [
+            [
+                
             ]
         ]
     }
