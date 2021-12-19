@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from pgmpy.readwrite import XMLBIFReader
 import math
 import itertools
+import random
 import pandas as pd
 from copy import deepcopy
 
@@ -32,6 +33,73 @@ class BayesNet:
         # check for cycles
         if not nx.is_directed_acyclic_graph(self.structure):
             raise Exception('The provided graph is not acyclic.')
+
+    # GENERATE BN ------------------------------------------------------------------------------------------------
+    def generate_random(self, number: int) -> None:
+        """
+        Generate a BayesNet 
+        """
+        # create nodes
+        variables = []
+        for i in range(number):
+            variables.append(str(i))
+
+        # create edges and create cpts
+        edges = []
+        cpts = {}
+        for index, node in enumerate(variables):
+            start = 0
+            vars = [node]
+            nodes=variables[index+1:-1]
+            selected_nodes=nodes
+            if index < len(variables)-2:
+                start=1
+                print(index, len(variables)-2)
+                print('nodes', nodes, variables, start, index, len(variables)-1)
+                selected_nodes = random.sample(nodes, k=random.randint(start,int(len(nodes))))
+            
+            print(selected_nodes)
+            for edge in selected_nodes:
+                print('edge', edge)
+                edges.append([node,edge])
+                vars.append(edge)
+
+            worlds = [list(i) + ['1'] for i in itertools.product([False, True], repeat=len(vars))]
+            columns = list(vars) + ['p']
+            cpts.update({node: pd.DataFrame(worlds, columns=columns)})
+
+        print('variables', variables)
+        print('edges', edges)
+        print('cpts', cpts)
+        
+
+        # # iterating through vars
+        # for key, values in bif_reader.get_values().items():
+        #     values = values.transpose().flatten() # type: ignore
+        #     n_vars = int(math.log2(len(values)))
+        #     worlds = [list(i) for i in itertools.product([False, True], repeat=n_vars)]
+        #     # create empty array
+        #     cpt = []
+        #     # iterating through worlds within a variable
+        #     for i in range(len(values)):
+        #         # add the probability to each possible world
+        #         worlds[i].append(values[i])
+        #         cpt.append(worlds[i])
+
+        #     # determine column names
+        #     columns = bif_reader.get_parents()[key]
+        #     columns.reverse()
+        #     columns.append(key)
+        #     columns.append('p')
+        #     cpts[key] = pd.DataFrame(cpt, columns=columns)
+        
+        # # load vars
+        # variables = bif_reader.get_variables()
+        
+        # # load edges
+        # edges = bif_reader.get_edges()
+
+        self.create_bn(variables, edges, cpts) # type: ignore
 
     def load_from_bifxml(self, file_path: str) -> None:
         """
@@ -71,6 +139,9 @@ class BayesNet:
         
         # load edges
         edges = bif_reader.get_edges()
+        print("variables", variables)
+        print("edges", edges)
+        print("cpts", cpts)
 
         self.create_bn(variables, edges, cpts) # type: ignore
 
@@ -481,6 +552,7 @@ class BayesNet:
     def create_factor(self, X: Set[str], value: List):
         """
         :param X: a set of variables
+        :param value: added cpt value
 
         :return: a factor over variables X that are all equal to zero
         """
@@ -525,7 +597,7 @@ class BayesNet:
 
         return new_f
 
-    def max_out(self, f_x: pd.DataFrame, Z: str) -> tuple[pd.DataFrame, List]: 
+    def max_out(self, f_x: pd.DataFrame, Z: str, visited: set) -> pd.DataFrame: 
         """
         :param X: a set of variables => e.g BCD
         :param Z: a subset of variables X  => e.g D
@@ -533,13 +605,14 @@ class BayesNet:
         :return: a factor corresponding to Max_z(f)
         """
         X = set(f_x.columns.tolist()) - set(['p'])
-        Y = X - set([Z]) # e.g BC
+        Y = X - set([Z]) - visited # e.g BC
         new_f = pd.DataFrame()
 
         if len(Y) > 0:
-            new_f: pd.DataFrame = f_x.loc[f_x.groupby(list(Z))['p'].idxmax()].reset_index(drop=True)
+            new_f: pd.DataFrame = f_x.loc[f_x.reset_index().groupby(list(Y))['p'].idxmax()]
         else:
-            new_f: pd.DataFrame = f_x.loc[f_x['p'].idxmax()].reset_index(drop=True)
+            max = f_x['p'].max()
+            new_f: pd.DataFrame = f_x[f_x['p'] == max]
 
         return new_f
 
@@ -593,7 +666,7 @@ class BayesNet:
         self.draw_structure()
         print(list(set(Q) - set(M)))
         pi = order_function(list(set(Q) - set(M))) + order_function(M)
-        print(pi, 'pi')
+        print(pi, 'pi', len(pi))
         cpts = self.get_all_cpts()
         cpts_e = {}
 
@@ -604,7 +677,7 @@ class BayesNet:
             f_pi, fpi_keys = self.get_cpts_x(pi[i], cpts_e)
             fi = self.mult_factors(f_pi)
             if pi[i] in M:
-                fi = self.max_out(fi, pi[i])
+                fi = self.max_out(fi, pi[i], set(pi[:i]))
             else:
                 fi = self.sum_out(fi, pi[i])
 

@@ -4,6 +4,7 @@ from enum import Enum
 import pandas as pd
 import copy
 import json
+import os
 
 class Heuristics(Enum):
     MIN_ORDER='MIN_ORDER'
@@ -113,8 +114,30 @@ class BNReasoner:
 
         return temp_bn.map_and_mpe(order, e, M)
 
+    # def create_random_bn(self) -> None:
+    #     bn = BayesNet()
+    #     return bn.generate_random(10)
+def task_2() -> None:
+    directory = "./test_data/task_2"
+
+    for filename in os.listdir(directory):
+        if filename.endswith("101.xml"): 
+            # print(os.path.join(directory, filename))
+            file = os.path.join(directory, filename)
+            bn =  BNReasoner(file)
+            print(file)
+            print(bn.map_and_mpe(order_function=Heuristics.MIN_ORDER, e=[('node1', False), ('node10', True)]))
+            continue
+        else:
+            continue
+            
 
 if __name__ =='__main__':
+    # bn = BayesNet()
+    # bn.generate_random(10)
+    # bn.draw_structure()
+    task_2()
+
     lecture_Example = BNReasoner("testing/lecture_Example.BIFXML")
     lecture_Example_2 = BNReasoner("testing/lecture_Example2.BIFXML")
     dog_problem = BNReasoner("testing/dog_problem.BIFXML")
