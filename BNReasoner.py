@@ -137,6 +137,7 @@ class BNReasoner:
 
 
 if __name__ =='__main__':
+    pass
     # lecture_Example = BNReasoner("testing/lecture_Example.BIFXML")
     # lecture_Example_2 = BNReasoner("testing/lecture_Example2.BIFXML")
     # dog_problem = BNReasoner("testing/dog_problem.BIFXML")
