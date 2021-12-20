@@ -643,10 +643,6 @@ class BayesNet:
 
         :return: the marginal distribution of P(Q, E)
         """
-        for q in Q: 
-            if q in pi: 
-                pi.remove(q)
-
         cpts = self.get_all_cpts()
         cpts_e = {}
         f_sum = pd.DataFrame()

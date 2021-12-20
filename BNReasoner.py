@@ -91,7 +91,7 @@ class BNReasoner:
 
         return temp_bn.net_prune(set(Q), e) # type: ignore
 
-    def marginal_dist(self, Q: List[str], e: List[tuple[str, bool] or None], pi: List[str]) -> pd.DataFrame:
+    def marginal_dist(self, Q: List[str], e: List[tuple[str, bool] or None], order_function: Heuristics) -> pd.DataFrame:
         """
         Computes the marginal distribution P(Q|e)
         given the query variables Q and possibly empty evidence e
@@ -103,8 +103,17 @@ class BNReasoner:
         :return: TODO
         """
         temp_bn = copy.deepcopy(self.bn)
+        pi = temp_bn.get_all_variables()
 
-        return temp_bn.marginal_distrib(Q, e, pi) # type: ignore
+        for q in Q: 
+            if q in pi: 
+                pi.remove(q)
+
+        if Heuristics.MIN_FILL == order_function: order_pi=temp_bn.min_fill(pi)
+        elif Heuristics.MIN_ORDER == order_function: order_pi=temp_bn.min_degree(pi)
+        else: order_pi=temp_bn.random_order(pi)
+
+        return temp_bn.marginal_distrib(Q, e, order_pi) # type: ignore
 
     def map_and_mpe(self, order_function: Heuristics, e: List[tuple[str, bool]], M: List[str]=[]) -> pd.DataFrame:
         """
@@ -149,8 +158,3 @@ if __name__ =='__main__':
     # print(lecture_Example_2.map_and_mpe(order_function=Heuristics.MIN_ORDER, e=[('O', False), ('J', False)], M=['I',  'Y']))
     # print(lecture_Example_2.map_and_mpe(order_function=Heuristics.MIN_FILL, e=[('O', False), ('J', False)], M=['I',  'Y']))
     # print(lecture_Example_2.map_and_mpe(order_function=Heuristics.RANDOM, e=[('O', False), ('J', False)], M=['I', 'Y']))
-    # bn = BayesNet()
-    # bn.load_from_bifxml("testing/lecture_Example2.BIFXML")
-    # interaction_graph = bn.get_interaction_graph()
-    # bn.draw_graph(interaction_graph)
-
