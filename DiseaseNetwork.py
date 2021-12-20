@@ -45,8 +45,8 @@ class DiseaseNetwork():
 
 if __name__ =='__main__':
     network = DiseaseNetwork()
-    #print(network.get_mpe())
-    # print(network.get_map()) # FIX
-    #print(network.get_posterior_marginal())
-    print(network.get_d_sep()) # networkFIX
-    #print(network.get_priori_marginal())
+    print(network.get_mpe())
+    print(network.get_map())
+    print(network.get_posterior_marginal())
+    print(network.get_d_sep())
+    print(network.get_priori_marginal())
