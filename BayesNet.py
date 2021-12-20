@@ -35,7 +35,7 @@ class BayesNet:
             raise Exception('The provided graph is not acyclic.')
 
     # GENERATE BN ------------------------------------------------------------------------------------------------
-    def generate_random(self, number: int=10, n_roots: int=2, max_edges: int=4, min_edges:int=2) -> tuple[int, int, int, int]:
+    def generate_random(self, number: int=10, n_roots: int=2, max_edges: int=4, min_edges:int=2) -> Dict:
         """
         Generate a BayesNet 
         """
@@ -82,7 +82,7 @@ class BayesNet:
             # find degree
             if len(neighbors[node]) > degree:
                 degree = len(neighbors[node])
-            print(neighbors, degree)
+            # print(neighbors, degree)
             vars.append(node)
 
             worlds = [list(i) for i in itertools.product([False, True], repeat=len(vars))]
@@ -106,7 +106,7 @@ class BayesNet:
 
         self.create_bn(variables, edges, cpts) # type: ignore
 
-        return degree, n_roots, max_edges, min_edges
+        return {'n_nodes': number, 'degree': degree, 'n_roots': n_roots, 'max_edges': max_edges, 'min_edges': min_edges}
 
     def load_from_bifxml(self, file_path: str) -> None:
         """
