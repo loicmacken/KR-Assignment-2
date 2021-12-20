@@ -664,12 +664,14 @@ class BayesNet:
 
         :return: the marginal distribution of MAP_p(M, E) or MPE_p(E)
         """
-        self.net_prune(set(M), e)
         Q = self.get_all_variables()
 
         if len(M) == 0:
             M = Q
-
+        
+        self.net_prune(set(M), e)
+        Q = self.get_all_variables()
+        
         pi = order_function(list(set(Q) - set(M))) + order_function(M)
         print(pi, 'pi', len(pi))
         cpts = self.get_all_cpts()
