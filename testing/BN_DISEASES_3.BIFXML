@@ -4,7 +4,7 @@
 <!--
 	Bayesian network in XMLBIF v0.3 (BayesNet Interchange Format)
 	Produced by JavaBayes (http://www.cs.cmu.edu/~javabayes/
-	Output created Mon Dec 20 14:02:30 CET 2021
+	Output created Mon Dec 20 14:33:00 CET 2021
 -->
 
 
@@ -32,98 +32,98 @@
 
 <!-- Variables -->
 <VARIABLE TYPE="nature">
-	<NAME>Gender</NAME>
+	<NAME>G</NAME>
 	<OUTCOME>true</OUTCOME>
 	<OUTCOME>false</OUTCOME>
 	<PROPERTY>position = (199, 145)</PROPERTY>
 </VARIABLE>
 
 <VARIABLE TYPE="nature">
-	<NAME>Job_type</NAME>
+	<NAME>JT</NAME>
 	<OUTCOME>true</OUTCOME>
 	<OUTCOME>false</OUTCOME>
 	<PROPERTY>position = (367, 148)</PROPERTY>
 </VARIABLE>
 
 <VARIABLE TYPE="nature">
-	<NAME>high_job_demands</NAME>
+	<NAME>HJD</NAME>
 	<OUTCOME>true</OUTCOME>
 	<OUTCOME>false</OUTCOME>
 	<PROPERTY>position = (284, 301)</PROPERTY>
 </VARIABLE>
 
 <VARIABLE TYPE="nature">
-	<NAME>lower_income</NAME>
+	<NAME>LI</NAME>
 	<OUTCOME>true</OUTCOME>
 	<OUTCOME>false</OUTCOME>
 	<PROPERTY>position = (487, 297)</PROPERTY>
 </VARIABLE>
 
 <VARIABLE TYPE="nature">
-	<NAME>restricted_social_opportunities_</NAME>
+	<NAME>RSO</NAME>
 	<OUTCOME>true</OUTCOME>
 	<OUTCOME>false</OUTCOME>
 	<PROPERTY>position = (407, 422)</PROPERTY>
 </VARIABLE>
 
 <VARIABLE TYPE="nature">
-	<NAME>occupational_strain</NAME>
+	<NAME>OS</NAME>
 	<OUTCOME>true</OUTCOME>
 	<OUTCOME>false</OUTCOME>
 	<PROPERTY>position = (186, 548)</PROPERTY>
 </VARIABLE>
 
 <VARIABLE TYPE="nature">
-	<NAME>job_burnout_</NAME>
+	<NAME>JB</NAME>
 	<OUTCOME>true</OUTCOME>
 	<OUTCOME>false</OUTCOME>
 	<PROPERTY>position = (410, 616)</PROPERTY>
 </VARIABLE>
 
 <VARIABLE TYPE="nature">
-	<NAME>mobbing_</NAME>
+	<NAME>M</NAME>
 	<OUTCOME>true</OUTCOME>
 	<OUTCOME>false</OUTCOME>
 	<PROPERTY>position = (590, 541)</PROPERTY>
 </VARIABLE>
 
 <VARIABLE TYPE="nature">
-	<NAME>high_coresterol</NAME>
+	<NAME>HC</NAME>
 	<OUTCOME>true</OUTCOME>
 	<OUTCOME>false</OUTCOME>
 	<PROPERTY>position = (47, 744)</PROPERTY>
 </VARIABLE>
 
 <VARIABLE TYPE="nature">
-	<NAME>smoking</NAME>
+	<NAME>S</NAME>
 	<OUTCOME>true</OUTCOME>
 	<OUTCOME>false</OUTCOME>
 	<PROPERTY>position = (213, 747)</PROPERTY>
 </VARIABLE>
 
 <VARIABLE TYPE="nature">
-	<NAME>hypertension</NAME>
+	<NAME>H</NAME>
 	<OUTCOME>true</OUTCOME>
 	<OUTCOME>false</OUTCOME>
 	<PROPERTY>position = (380, 745)</PROPERTY>
 </VARIABLE>
 
 <VARIABLE TYPE="nature">
-	<NAME>low_deicsion_latitude_</NAME>
+	<NAME>LDL</NAME>
 	<OUTCOME>true</OUTCOME>
 	<OUTCOME>false</OUTCOME>
 	<PROPERTY>position = (111, 297)</PROPERTY>
 </VARIABLE>
 
 <VARIABLE TYPE="nature">
-	<NAME>Lung_cancer</NAME>
+	<NAME>LC</NAME>
 	<OUTCOME>true</OUTCOME>
 	<OUTCOME>false</OUTCOME>
 	<PROPERTY>position = (132, 874)</PROPERTY>
 </VARIABLE>
 
 <VARIABLE TYPE="nature">
-	<NAME>Coronary_heart_disease</NAME>
+	<NAME>CHD</NAME>
 	<OUTCOME>true</OUTCOME>
 	<OUTCOME>false</OUTCOME>
 	<PROPERTY>position = (309, 876)</PROPERTY>
@@ -132,98 +132,98 @@
 
 <!-- Probability distributions -->
 <DEFINITION>
-	<FOR>Gender</FOR>
+	<FOR>G</FOR>
 	<TABLE>0.49 0.51 </TABLE>
 </DEFINITION>
 
 <DEFINITION>
-	<FOR>Job_type</FOR>
+	<FOR>JT</FOR>
 	<TABLE>0.35 0.65 </TABLE>
 </DEFINITION>
 
 <DEFINITION>
-	<FOR>high_job_demands</FOR>
-	<GIVEN>Gender</GIVEN>
-	<GIVEN>Job_type</GIVEN>
+	<FOR>HJD</FOR>
+	<GIVEN>G</GIVEN>
+	<GIVEN>JT</GIVEN>
 	<TABLE>0.78 0.22 0.55 0.45 0.39 0.61 0.56 0.44 </TABLE>
 </DEFINITION>
 
 <DEFINITION>
-	<FOR>lower_income</FOR>
-	<GIVEN>Job_type</GIVEN>
-	<GIVEN>Gender</GIVEN>
+	<FOR>LI</FOR>
+	<GIVEN>JT</GIVEN>
+	<GIVEN>G</GIVEN>
 	<TABLE>0.41 0.59 0.37 0.63 0.69 0.31 0.8 0.2 </TABLE>
 </DEFINITION>
 
 <DEFINITION>
-	<FOR>restricted_social_opportunities_</FOR>
-	<GIVEN>high_job_demands</GIVEN>
-	<GIVEN>lower_income</GIVEN>
+	<FOR>RSO</FOR>
+	<GIVEN>HJD</GIVEN>
+	<GIVEN>LI</GIVEN>
 	<TABLE>0.82 0.18 0.66 0.34 0.7 0.3 0.26 0.74 </TABLE>
 </DEFINITION>
 
 <DEFINITION>
-	<FOR>occupational_strain</FOR>
-	<GIVEN>restricted_social_opportunities_</GIVEN>
-	<GIVEN>high_job_demands</GIVEN>
-	<GIVEN>low_deicsion_latitude_</GIVEN>
-	<GIVEN>lower_income</GIVEN>
+	<FOR>OS</FOR>
+	<GIVEN>RSO</GIVEN>
+	<GIVEN>HJD</GIVEN>
+	<GIVEN>LDL</GIVEN>
+	<GIVEN>LI</GIVEN>
 	<TABLE>0.89 0.11 0.73 0.27 0.65 0.35 0.83 0.17 0.71 0.29 0.68 0.32 0.8 0.2 0.69 0.31 0.78 0.22 0.69 0.31 0.67 0.33 0.79 0.21 0.78 0.22 0.75 0.25 0.78 0.22 0.05 0.95 </TABLE>
 </DEFINITION>
 
 <DEFINITION>
-	<FOR>job_burnout_</FOR>
-	<GIVEN>occupational_strain</GIVEN>
-	<GIVEN>mobbing_</GIVEN>
+	<FOR>JB</FOR>
+	<GIVEN>OS</GIVEN>
+	<GIVEN>M</GIVEN>
 	<TABLE>0.95 0.05 0.8 0.2 0.78 0.22 0.2 0.8 </TABLE>
 </DEFINITION>
 
 <DEFINITION>
-	<FOR>mobbing_</FOR>
+	<FOR>M</FOR>
 	<TABLE>0.4 0.6 </TABLE>
 </DEFINITION>
 
 <DEFINITION>
-	<FOR>high_coresterol</FOR>
-	<GIVEN>job_burnout_</GIVEN>
-	<GIVEN>occupational_strain</GIVEN>
+	<FOR>HC</FOR>
+	<GIVEN>JB</GIVEN>
+	<GIVEN>OS</GIVEN>
 	<TABLE>0.75 0.25 0.8 0.2 0.69 0.31 0.45 0.55 </TABLE>
 </DEFINITION>
 
 <DEFINITION>
-	<FOR>smoking</FOR>
-	<GIVEN>job_burnout_</GIVEN>
-	<GIVEN>occupational_strain</GIVEN>
+	<FOR>S</FOR>
+	<GIVEN>JB</GIVEN>
+	<GIVEN>OS</GIVEN>
 	<TABLE>0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 </TABLE>
 </DEFINITION>
 
 <DEFINITION>
-	<FOR>hypertension</FOR>
-	<GIVEN>job_burnout_</GIVEN>
-	<GIVEN>occupational_strain</GIVEN>
+	<FOR>H</FOR>
+	<GIVEN>JB</GIVEN>
+	<GIVEN>OS</GIVEN>
 	<TABLE>0.84 0.16 0.68 0.32 0.75 0.25 0.39 0.61 </TABLE>
 </DEFINITION>
 
 <DEFINITION>
-	<FOR>low_deicsion_latitude_</FOR>
-	<GIVEN>Gender</GIVEN>
-	<GIVEN>Job_type</GIVEN>
+	<FOR>LDL</FOR>
+	<GIVEN>G</GIVEN>
+	<GIVEN>JT</GIVEN>
 	<TABLE>0.33 0.67 0.59 0.41 0.27 0.63 0.79 0.21 </TABLE>
 </DEFINITION>
 
 <DEFINITION>
-	<FOR>Lung_cancer</FOR>
-	<GIVEN>high_coresterol</GIVEN>
-	<GIVEN>smoking</GIVEN>
+	<FOR>LC</FOR>
+	<GIVEN>HC</GIVEN>
+	<GIVEN>S</GIVEN>
 	<TABLE>0.89 0.11 0.63 0.37 0.75 0.25 0.29 0.71 </TABLE>
 </DEFINITION>
 
 <DEFINITION>
-	<FOR>Coronary_heart_disease</FOR>
-	<GIVEN>high_coresterol</GIVEN>
-	<GIVEN>hypertension</GIVEN>
-	<GIVEN>smoking</GIVEN>
-	<GIVEN>occupational_strain</GIVEN>
+	<FOR>CHD</FOR>
+	<GIVEN>HC</GIVEN>
+	<GIVEN>H</GIVEN>
+	<GIVEN>S</GIVEN>
+	<GIVEN>OS</GIVEN>
 	<TABLE>0.96 0.04 0.56 0.44 0.42 0.58 0.34 0.66 0.76 0.24 0.68 0.32 0.35 0.65 0.54 0.46 0.67 0.33 0.89 0.11 0.62 0.38 0.58 0.42 0.75 0.25 0.47 0.53 0.38 0.62 0.16 0.84 </TABLE>
 </DEFINITION>
 
