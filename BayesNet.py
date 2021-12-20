@@ -96,8 +96,8 @@ class BayesNet:
                 # add the probability to each possible world
                 p = round(random.uniform(0,1), 2)
                 p_reverse = round(1-p, 2)
-                cpt.append(str(p))
-                cpt.append(str(p_reverse))
+                cpt.append(p)
+                cpt.append(p_reverse)
 
             df.insert(loc=len(df.columns), column='p', value=cpt)
             cpts.update({node: df})
@@ -146,9 +146,6 @@ class BayesNet:
         
         # load edges
         edges = bif_reader.get_edges()
-        print("variables", variables)
-        print("edges", edges)
-        print("cpts", cpts)
 
         self.create_bn(variables, edges, cpts) # type: ignore
 
@@ -507,8 +504,6 @@ class BayesNet:
             min_var = ['', []]
             min_edges = 1000
 
-            # self.draw_graph(G)
-
             # find variable in X with smallest number of added edges in G
             for var in X_copy:
                 edges = []
@@ -669,14 +664,12 @@ class BayesNet:
 
         :return: the marginal distribution of MAP_p(M, E) or MPE_p(E)
         """
+        self.net_prune(set(M), e)
         Q = self.get_all_variables()
 
         if len(M) == 0:
             M = Q
 
-        self.net_prune(set(M), e)
-        self.draw_structure()
-        print(list(set(Q) - set(M)))
         pi = order_function(list(set(Q) - set(M))) + order_function(M)
         print(pi, 'pi', len(pi))
         cpts = self.get_all_cpts()
