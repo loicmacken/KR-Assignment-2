@@ -1,0 +1,118 @@
+// Bayesian network 
+network "InternalNetwork" { //14 variables and 14 probability distributions
+}
+variable  "Gender" { //2 values
+	type discrete[2] {  "true"  "false" };
+	property "position = (199, 145)" ;
+}
+variable  "Job_type" { //2 values
+	type discrete[2] {  "true"  "false" };
+	property "position = (367, 148)" ;
+}
+variable  "high_job_demands" { //2 values
+	type discrete[2] {  "true"  "false" };
+	property "position = (284, 301)" ;
+}
+variable  "lower_income" { //2 values
+	type discrete[2] {  "true"  "false" };
+	property "position = (487, 297)" ;
+}
+variable  "restricted_social_opportunities_" { //2 values
+	type discrete[2] {  "true"  "false" };
+	property "position = (407, 422)" ;
+}
+variable  "occupational_strain" { //2 values
+	type discrete[2] {  "true"  "false" };
+	property "position = (186, 548)" ;
+}
+variable  "job_burnout_" { //2 values
+	type discrete[2] {  "true"  "false" };
+	property "position = (410, 616)" ;
+}
+variable  "mobbing_" { //2 values
+	type discrete[2] {  "true"  "false" };
+	property "position = (590, 541)" ;
+}
+variable  "high_coresterol" { //2 values
+	type discrete[2] {  "true"  "false" };
+	property "position = (47, 744)" ;
+}
+variable  "smoking" { //2 values
+	type discrete[2] {  "true"  "false" };
+	property "position = (213, 747)" ;
+}
+variable  "hypertension" { //2 values
+	type discrete[2] {  "true"  "false" };
+	property "position = (380, 745)" ;
+}
+variable  "low_deicsion_latitude_" { //2 values
+	type discrete[2] {  "true"  "false" };
+	property "position = (111, 297)" ;
+}
+variable  "Lung_cancer" { //2 values
+	type discrete[2] {  "true"  "false" };
+	property "position = (132, 874)" ;
+}
+variable  "Coronary_heart_disease" { //2 values
+	type discrete[2] {  "true"  "false" };
+	property "position = (309, 876)" ;
+}
+probability (  "Gender" ) { //1 variable(s) and 2 values
+	table 
+		0.49	// p(true | evidence )
+		0.51; 	// p(false | evidence );
+}
+probability (  "Job_type" ) { //1 variable(s) and 2 values
+	table 
+		0.35	// p(true | evidence )
+		0.65; 	// p(false | evidence );
+}
+probability (  "high_job_demands"  "Gender"  "Job_type" ) { //3 variable(s) and 8 values
+	table 
+		 0.78 0.55 0.39 0.56 0.22 0.45 0.61 0.44;
+}
+probability (  "lower_income"  "Job_type"  "Gender" ) { //3 variable(s) and 8 values
+	table 
+		 0.41 0.37 0.69 0.8 0.59 0.63 0.31 0.2;
+}
+probability (  "restricted_social_opportunities_"  "high_job_demands"  "lower_income" ) { //3 variable(s) and 8 values
+	table 
+		 0.82 0.66 0.7 0.26 0.18 0.34 0.3 0.74;
+}
+probability (  "occupational_strain"  "restricted_social_opportunities_"  "high_job_demands"  "low_deicsion_latitude_"  "lower_income" ) { //5 variable(s) and 32 values
+	table 
+		 0.89 0.73 0.65 0.83 0.71 0.68 0.8 0.69 0.78 0.69 0.67 0.79 0.78 0.75 0.78 0.05 0.11 0.27 0.35 0.17 0.29 0.32 0.2 0.31 0.22 0.31 0.33 0.21 0.22 0.25 0.22 0.95;
+}
+probability (  "job_burnout_"  "occupational_strain"  "mobbing_" ) { //3 variable(s) and 8 values
+	table 
+		 0.95 0.8 0.78 0.2 0.05 0.2 0.22 0.8;
+}
+probability (  "mobbing_" ) { //1 variable(s) and 2 values
+	table 
+		0.4	// p(true | evidence )
+		0.6; 	// p(false | evidence );
+}
+probability (  "high_coresterol"  "job_burnout_"  "occupational_strain" ) { //3 variable(s) and 8 values
+	table 
+		 0.75 0.8 0.69 0.45 0.25 0.2 0.31 0.55;
+}
+probability (  "smoking"  "job_burnout_"  "occupational_strain" ) { //3 variable(s) and 8 values
+	table 
+		 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5;
+}
+probability (  "hypertension"  "job_burnout_"  "occupational_strain" ) { //3 variable(s) and 8 values
+	table 
+		 0.84 0.68 0.75 0.39 0.16 0.32 0.25 0.61;
+}
+probability (  "low_deicsion_latitude_"  "Gender"  "Job_type" ) { //3 variable(s) and 8 values
+	table 
+		 0.33 0.59 0.27 0.79 0.67 0.41 0.63 0.21;
+}
+probability (  "Lung_cancer"  "high_coresterol"  "smoking" ) { //3 variable(s) and 8 values
+	table 
+		 0.89 0.63 0.75 0.29 0.11 0.37 0.25 0.71;
+}
+probability (  "Coronary_heart_disease"  "high_coresterol"  "hypertension"  "smoking"  "occupational_strain" ) { //5 variable(s) and 32 values
+	table 
+		 0.96 0.56 0.42 0.34 0.76 0.68 0.35 0.54 0.67 0.89 0.62 0.58 0.75 0.47 0.38 0.16 0.04 0.44 0.58 0.66 0.24 0.32 0.65 0.46 0.33 0.11 0.38 0.42 0.25 0.53 0.62 0.84;
+}
