@@ -25,7 +25,18 @@ class BNReasoner:
             self.bn = net
 
     # TODO: This is where your methods should go
-    
+
+    def draw_structure(self) -> None:
+        temp_bn = copy.deepcopy(self.bn)
+
+        temp_bn.draw_structure()
+
+    def draw_interaction_graph(self) -> None:
+        temp_bn = copy.deepcopy(self.bn)
+        interaction_graph = temp_bn.draw_structure()
+
+        temp_bn.draw_graph(interaction_graph)
+
     def d_seperation(self, X: List[str], Y: List[str], Z: List[str]) -> bool:
         """
         Gets the d-seperation given the three lists of variables: X, Y and Z,
@@ -115,80 +126,8 @@ class BNReasoner:
 
         return temp_bn.map_and_mpe(order, e, M)
 
-# def task_2() -> None:
-#     directory = "./test_data/task_2"
-
-#     for filename in os.listdir(directory):
-#         if filename.endswith("101.xml"): 
-#             # print(os.path.join(directory, filename))
-#             file = os.path.join(directory, filename)
-#             bn =  BNReasoner(file)
-#             print(file)
-#             print(bn.map_and_mpe(order_function=Heuristics.MIN_ORDER, e=[('node1', False), ('node10', True)]))
-#             continue
-#         else:
-#             continue
-
-def task_2() -> None:
-    start_num_nodes = 10
-    start_num_roots = 2
-    start_num_min_edges = 2
-    start_num_max_edges = 4
-    increase_nodes = 10
-    num_tries = 5
-
-    # change variables
-    for run_number in range(num_tries):
-        bn = BayesNet()
-        result = bn.generate_random(number=start_num_nodes, 
-            n_roots=start_num_roots, max_edges=start_num_max_edges, min_edges=start_num_min_edges)
-        bn.draw_structure_sample()
-        print(bn.get_all_cpts())
-        reasoner = BNReasoner(bn)
-
-        start_num_nodes+=increase_nodes
-        for method in Heuristics:
-            print(method)
-            reasoner.map_and_mpe(order_function=method, e=[('node1', False), ('node2', False)], M=['node3', 'node4'])
-            helpers.save_data(method.value, run_number, result)
-
-    # bn = BayesNet()
-    # bn.generate_random(5, n_roots=2)
-    # bn.draw_structure_sample()
-    # int_grah = bn.get_interaction_graph()
-    # bn.draw_graph(int_grah)
-    # print(bn.get_all_cpts())
-    # bn_2 = BayesNet()
-    # bn_2.generate_random()
-    # bn_2.draw_structure_sample()
-    # print(bn_2.get_all_cpts())
-    # bn_3 = BayesNet()
-    # bn_3.generate_random(20, n_roots=4)
-    # bn_3.draw_structure_sample()
-    # print(bn_3.get_all_cpts())
-
-def task_3() -> None:
-    # draw graph
-    bn = BayesNet()
-    bn.load_from_bifxml("testing/diseases.BIFXML")
-    bn.draw_structure()
-
-    # draw interaction graph
-    interaction_graph = bn.get_interaction_graph()
-    bn.draw_graph(interaction_graph)
-
-    disease_problem = BNReasoner('testing/diseases.BIFXML')       
-
-    # priori marginal query.
-    # posterior marginal query.
-    # MAP query
-    # MEP query
-    disease_problem.map_and_mpe(order_function=Heuristics.MIN_ORDER, e=[('gender', False), ('job', True)])
 
 if __name__ =='__main__':
-
-    task_2()
-
     # lecture_Example = BNReasoner("testing/lecture_Example.BIFXML")
     # lecture_Example_2 = BNReasoner("testing/lecture_Example2.BIFXML")
     # dog_problem = BNReasoner("testing/dog_problem.BIFXML")
