@@ -1,21 +1,24 @@
 import helper_functions as helpers
 from BNReasoner import BNReasoner, Heuristics
 from BayesNet import BayesNet
+from enum import Enum
 import random
 import time
 
+class Queries(Enum):
+    MAP='MAP'
+    MPE='MPE'
 
-run_number = 2
-num_bns = 5
-num_categories = 5
-start_num_evidence = 2
+runs = 10
+ratio_evidence = 2.5
+ratio_map_vars = 5
 
 def load_bns() -> dict:
     bns = {}
     start_num_nodes = 5
     start_num_roots = 2
-    start_num_min_edges = 2
-    start_num_max_edges = 4
+    start_num_min_edges = 1
+    start_num_max_edges = 3
     increase_nodes = 10
     num_bns = 5
 
@@ -32,52 +35,48 @@ def load_bns() -> dict:
 def run_experiment():
     bns = load_bns()
 
-    # for run_number in range(run_number):
-    for data, bn in bns.values(): 
-        reasoner = BNReasoner(bn)
-        for method in Heuristics:
-            print(method)
+    for run_number in range(runs):
+        for data, bn in bns.values():
             e=[]
+            reasoner = BNReasoner(bn)
             nodes = bn.get_all_variables()
-            start_num_evidence = int(len(nodes)/2.5)
-            selected_evidence = random.sample(nodes, start_num_evidence)
+            start_num_evidence = int(len(nodes)/ratio_evidence)
+            start_num_map_vars = int(len(nodes)/ratio_map_vars)
+            selected_evidence = random.sample(nodes, k=start_num_evidence)
+            selected_map_variables = random.sample(set(nodes)-set(selected_evidence), k=start_num_map_vars)
+            
             for evidence in selected_evidence:
                 e.append((evidence, True))
-            
-            start_time = time.time()
-            #mpe
-            result = reasoner.map_and_mpe(order_function=method, e=e)
-            end_time = time.time() - start_time
 
-            data['n_evidence'] = start_num_evidence
-            data['time'] = end_time
-            data['result'] = result
-            helpers.save_data(method.value, run_number, data)
+            for method in Heuristics:
+                print(method)
 
-def create_experiment_graphs():
-    data = helpers.combine_results(Heuristics, '')
-    helpers.create_lineplots(data, '', Heuristics, x_val="n_nodes", y_val="time")
-    pass
+                # mpe and map
+                for query in Queries:
+                    if query is Queries.MPE: map_variables = []
+                    else: map_variables = selected_map_variables
+
+                    start_time = time.time()
+                    result = reasoner.map_and_mpe(order_function=method, e=e, M=map_variables)
+                    end_time = time.time() - start_time
+
+                    data['n_evidence'] = start_num_evidence
+                    data['time'] = end_time
+                    data['degrees_occurred'] = result[0]
+                    data['result'] = result[1]
+                    helpers.save_data(query.value, method.value, run_number, data)
+
+def create_experiment_graphs(query):
+    data = helpers.combine_results(query, Heuristics)
+    helpers.create_lineplots(data, query, Heuristics)
+    helpers.create_barchart(data, query, Heuristics)
 
 
 if __name__ =='__main__':
-    run_experiment()
-    create_experiment_graphs()
+    # run_experiment()
+    create_experiment_graphs(Queries.MPE.value)
+    create_experiment_graphs(Queries.MAP.value)
 
-    # bn = BayesNet()
-    # bn.generate_random(5, n_roots=2)
-    # bn.draw_structure_sample()
-    # int_grah = bn.get_interaction_graph()
-    # bn.draw_graph(int_grah)
-    # print(bn.get_all_cpts())
-    # bn_2 = BayesNet()
-    # bn_2.generate_random()
-    # bn_2.draw_structure_sample()
-    # print(bn_2.get_all_cpts())
-    # bn_3 = BayesNet()
-    # bn_3.generate_random(20, n_roots=4)
-    # bn_3.draw_structure_sample()
-    # print(bn_3.get_all_cpts())
 
 # def task_2() -> None:
 #     directory = "./test_data/task_2"
