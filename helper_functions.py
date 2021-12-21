@@ -17,12 +17,25 @@ FILE_NAME_RESULTS_CSV = '/run_{0}.csv'
 FILE_RESULTS = '/run_*.csv'
 FILE_NAME_QUERY_CSV = '/query_{0}'
 
+def set_fonts():
+    SMALL_SIZE =12
+    MEDIUM_SIZE = 14
+    BIGGER_SIZE = 16
+
+    plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+    plt.rc('axes', titlesize=SMALL_SIZE)     # fontsize of the axes title
+    plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+    plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+    plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
+    plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 def create_lineplots(data, query, Heuristics):
     # Create a color palette
     palette = plt.get_cmap('Set1')
     # Change the style of plot
     plt.style.use('seaborn')
+    set_fonts()
 
     res = {} 
     for index, i in enumerate(Heuristics): 
@@ -37,11 +50,11 @@ def create_lineplots(data, query, Heuristics):
         plt.plot(res['x' + i], res['y' + i], label = "%s" % i.lower(), marker='o', ms=3, color=palette(index), linewidth=1, alpha=0.9) #, color=color[int(i)-1])
 
         
-    plt.xlabel('Number of variables (nodes)')
+    plt.xlabel('# of variables (nodes)')
     # Set the y axis label of the current axis.
     plt.ylabel('Time')
     # Set a title of the current axes.
-    plt.title('%s Query' % query)
+    plt.title('%s Query' % query, fontsize=16)
     # show a legend on the plot
     plt.legend()
     # Display a figure.
@@ -52,6 +65,7 @@ def create_histchart(data, query, Heuristics, n_node):
     palette = plt.get_cmap('Set1')
     # Change the style of plot
     plt.style.use('seaborn')
+    set_fonts()
 
     res = {} 
     bins= set({})
@@ -68,9 +82,9 @@ def create_histchart(data, query, Heuristics, n_node):
     # Set the x axis label of the current axis.
     plt.xlabel('Tracked degrees of each order (throughout the execution)')
     # Set the y axis label of the current axis.
-    plt.ylabel('Number of occurrences (in all 10 runs)')
+    plt.ylabel('# of occurrences (in all 10 runs)')
     # Set a title of the current axes.
-    plt.title('%s Query in a %s-node BN' % (query, n_node))
+    plt.title('%s Query in a %s-node BN' % (query, n_node), fontsize=16)
     # show a legend on the plot
     plt.legend()
     # Display a figure.
@@ -83,6 +97,7 @@ def create_barchart(data, query, Heuristics):
     palette = plt.get_cmap('Set1')
     # Change the style of plot
     plt.style.use('seaborn')
+    set_fonts()
 
     res = {} 
     xtick = set({})
