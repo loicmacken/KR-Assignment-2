@@ -125,7 +125,7 @@ class BNReasoner:
 
         return temp_bn.marginal_distrib(Q, e, order_pi)
 
-    def map_and_mpe(self, order_function: Heuristics, e: List[tuple[str, bool]], M: List[str]=[]) -> pd.DataFrame:
+    def map_and_mpe(self, order_function: Heuristics, e: List[tuple[str, bool]], M: List[str]=[]) -> tuple[List, pd.DataFrame]:
         """
         Computes the most likely instantiations given evidence and an ordering function (heuristic).
         If M is empty, returns MPE, else it returns MAP
