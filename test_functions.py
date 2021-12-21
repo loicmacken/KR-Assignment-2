@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Dict
 from BNReasoner import BNReasoner
 from BayesNet import BayesNet
 import json   
@@ -8,50 +8,49 @@ class Tester:
     """
     Contains the functionality for testing each of the functions of BNReasoner.py by comparing with pre-calculated values (by hand)
     """
-    def __init__(self, reasoner, data) -> None:
+    def __init__(self, reasoner: BNReasoner, data: Dict) -> None:
         self.reasoner = reasoner
         self.data = data
 
-    def test_d_sep(self):   
+    def test_d_sep(self) -> None:   
         for X, Y, Z, result in self.data['d_sep']:
             assert self.reasoner.d_seperation(X, Y, Z) == result
 
-    def test_min_degree(self):
+    def test_min_degree(self) -> None:
         for X, result in self.data['min_degree']:
             assert self.reasoner.ordering_min_degree(X) == result
         
-    def test_min_fill(self):
+    def test_min_fill(self) -> None:
         for X, result in self.data['min_fill']:
             assert self.reasoner.ordering_min_fill(X) == result
 
-    def test_net_prune(self):
+    def test_net_prune(self) -> None:
         for Q, e, vars, edges in self.data['net_prune']:
             temp_bn = copy.deepcopy(self.reasoner.bn)
             assert isinstance(temp_bn, BayesNet)
 
-            edge_list: List[Tuple] = list(tuple(x) for x in edges)
+            edge_list: List[tuple] = list(tuple(x) for x in edges)
             
             temp_bn.net_prune(set(Q), e)
             # verify whether the pruned network has the same variables as the computed test data
             assert temp_bn.get_all_variables() == vars
             assert temp_bn.get_all_edges() == edge_list
 
-    def test_margin_dist(self):
-        for Q, e, pi, result in self.data['marginal_distrib']:
-            e_list: List[Tuple] = list(tuple(x) for x in e)
+    def test_margin_dist(self) -> None:
+        for Q, e, pi, results in self.data['marginal_distrib']:
+            e_list: List[tuple] = list(tuple(x) for x in e)
 
             # the output CPT from the marginal distribution
             df = self.reasoner.marginal_dist(Q, e_list, pi)  # type: ignore
 
-            # the last row, which is where all variables are true
-            output = df.iloc[-1].loc['p']
+            # the column 'p' which has the probabilities
+            outputs = list(df['p'])
 
-            result_float = float(result[0])
+            for out, res in zip(outputs, results):
+                # test whether the probability value of the last row is within a delta margin of the test value
+                assert (float(res) - DELTA) < float(out) < (float(res) + DELTA)
 
-            # test whether the probability value of the last row is within a delta margin of the test value
-            assert (result_float - DELTA) < output < (result_float + DELTA)
-
-    def test_map_mpe(self):
+    def test_map_mpe(self) -> None:
         for _ in self.data['map_and_mpe']:
             pass
 
