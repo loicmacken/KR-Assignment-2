@@ -1,0 +1,5 @@
+n_nodes,degree,n_roots,max_edges,min_edges,n_evidence,time,result
+5,4,2,4,2,2,0.09547281265258789,"       3     2     4      0     1         p
+0  False  True  True  False  True  0.091977"
+15,10,2,4,2,6,1.0566236972808838,"     13     2     5     6     4     0     8    12    11      9     1    14     10      3     7         p
+0  True  True  True  True  True  True  True  True  True  False  True  True  False  False  True  0.000177"

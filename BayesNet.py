@@ -310,20 +310,29 @@ class BayesNet:
 
     # ADDED FUNCTIONS -----------------------------------
 
-    def draw_graph(self, graph: nx.Graph) -> None:
+    @staticmethod
+    def draw_graph(graph: nx.Graph) -> None:
         """
         Visualize structure of the BN.
+
+        :param graph: the graph to visualize
         """
         nx.draw(graph, with_labels=True, node_size=3000)
         plt.show()
 
     def get_all_edges(self) -> List[Tuple[str, str]]:
         """
+        Returns all edges in the network
+
+        :return: list of edges in the BN
         """
         return [e for e in self.structure.edges]
 
     def get_leaf_nodes(self) -> List[str]:
         """
+        Returns all leaf nodes in the network
+
+        :return: list of leaf nodes in the BN
         """
         vars: Set[str] = set(self.get_all_variables())
 
@@ -335,6 +344,9 @@ class BayesNet:
 
     def get_root_nodes(self) -> List[str]:
         """
+        Returns all root nodes in the network
+
+        :return: list of root nodes in the BN
         """
         vars: Set[str] = set(self.get_all_variables())
 
@@ -346,6 +358,11 @@ class BayesNet:
 
     def get_node_parents(self, W: str) -> List[str]:
         """
+        Returns the parents of the given node W
+
+        :param W: variable of which the parents will be returned
+
+        :return: list of parents of W
         """
         parents: Set[str] = set()
         for parent, child in self.get_all_edges():
@@ -354,8 +371,15 @@ class BayesNet:
 
         return list(parents)
 
-    def is_connected(self, X: Set[str], Y: Set[str]) -> bool:
+    def _is_connected(self, X: Set[str], Y: Set[str]) -> bool:
         """
+        Recursively verifies whether there is a path leading from nodes in X to nodes in Y,
+        disregarding any directionality.
+
+        :param X: the set of nodes to find connections from
+        :param Y: the set of nodes to find connections to
+
+        :return: True if connected
         """
         visited: Set[str] = set()
 
@@ -366,6 +390,13 @@ class BayesNet:
 
     def _get_connections(self, var: str, Y: Set[str], visited: Set[str]) -> bool:
         """
+        Helper function for recursion of _is_connected.
+
+        :param var: the variable to start from
+        :param Y: the set of variables to find a connection to
+        :param visited: the nodes that have been visited previously by this function
+
+        :return: True if var is connected to a variable in Y
         """
         if var in Y: return True
         
@@ -377,8 +408,11 @@ class BayesNet:
                 return True
         return False
 
-    def prune_leaves(self, vars: Set[str]) -> None:
+    def _prune_leaves(self, vars: Set[str]) -> None:
         """
+        Iteratively removes any leaf nodes that are not in the set of given nodes.
+        
+        :param vars: the set of nodes that will not be removed
         """
         while(True):
             leaves: Set[str] = set(self.get_leaf_nodes())
@@ -393,12 +427,14 @@ class BayesNet:
             for leaf in leaves_to_delete:
                 self.del_var(leaf)
 
-    def get_cpts_x(self, X: str, cpts: Dict[str, pd.DataFrame]) -> tuple[List[pd.DataFrame], List[str]]:
+    def _get_cpts_x(self, X: str, cpts: Dict[str, pd.DataFrame]) -> tuple[List[pd.DataFrame], List[str]]:
         """
-        :param X: a variable in the BN 
-        :param cpts: List 
+        Returns all CPTs involving the variable X
 
-        :return: a list of cpts that include X
+        :param X: a variable in the BN to retrieve CPTs from
+        :param cpts: list of all CPTs 
+
+        :return: a list of only the CPTs that include X
         """
         cpts_x = []
         cpts_x_values = []
@@ -410,12 +446,14 @@ class BayesNet:
 
         return cpts_x, cpts_x_values
 
-    def replace_cpts(self, cpts: Dict[str, pd.DataFrame], remove: List[str], add: Dict[str, pd.DataFrame]):
+    def _replace_cpts(self, cpts: Dict[str, pd.DataFrame], remove: List[str], add: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
         """
-        :param remove: List of cpt keys to be replaces
-        :param add: List of 
+        Delete all CPTs involving input CPT keys and add CPTs from input list
 
-        replace all factors in the List of keys by add factor
+        :param remove: List of CPT keys to be replaced
+        :param add: List of CPTs to add
+
+        :return: the updated dict of CPTs
         """
         for variable in remove:
             del cpts[variable]
@@ -438,7 +476,7 @@ class BayesNet:
         XYZ: Set[str] = X | Y | Z
 
         # delete leaf nodes W not part of X U Y U Z
-        self.prune_leaves(XYZ)
+        self._prune_leaves(XYZ)
 
         # delete all edges outgoing from Z
         for var in Z:
@@ -446,10 +484,15 @@ class BayesNet:
                 self.del_edge((var, child))
 
         # d-seperated if X and Y are NOT connected
-        return not self.is_connected(X, Y)
+        return not self._is_connected(X, Y)
 
     def random_order(self, X: List[str]) -> List[str]:
         """
+        Random order heuristic, returns a random order of the input list of variables.
+        
+        :param X: input variable list
+
+        :return: list X rearranged in a random order
         """
         random.shuffle(X)
 
@@ -457,6 +500,12 @@ class BayesNet:
 
     def min_degree(self, X: List[str]) -> List[str]:
         """
+        Gets the ordering of the variable list X
+        based on min-degree heuristics.
+
+        :param X: variables in network N
+
+        :return: an ordering PI of variables X
         """
         G = self.get_interaction_graph()
         pi = []
@@ -493,6 +542,12 @@ class BayesNet:
 
     def min_fill(self, X: List[str]) -> List[str]:
         """
+        Gets the ordering of the variable list X
+        based on min-fill heuristics.
+
+        :param X: variable list X
+
+        :return: an ordering PI of variables X
         """
         G = self.get_interaction_graph()
         pi = []
@@ -546,7 +601,7 @@ class BayesNet:
         evidence = dict(e)
 
         # first prune the leaves not in Q U E
-        self.prune_leaves(QE)
+        self._prune_leaves(QE)
 
         # then prune edges outgoing from E
         for parent, child in self.get_all_edges():
@@ -560,9 +615,11 @@ class BayesNet:
                 # remove edge
                 self.del_edge((parent, child))
 
-    def create_factor(self, X: Set[str], value: List):
+    def _create_factor(self, X: Set[str], value: List):
         """
-        :param X: a set of variables
+        Creates a factor over the cpt where all the probabilities of X variables are equal to zero.
+
+        :param X: a set of variables to set to zero
         :param value: added cpt value
 
         :return: a factor over variables X that are all equal to zero
@@ -573,10 +630,12 @@ class BayesNet:
         
         return cpt
 
-    def sum_out(self, f_x: pd.DataFrame, Z: str) -> pd.DataFrame:
+    def _sum_out(self, f_x: pd.DataFrame, Z: str) -> pd.DataFrame:
         """
-        :param X: a set of variables => e.g BCD
-        :param Z: a subset of variables X  => e.g D
+        Sums out the variables Z from the factor f_x
+
+        :param f_x: a factor over variables X
+        :param Z: a subset of variables X
 
         :return: a factor corresponding to Σ_z(f)
         """
@@ -587,9 +646,11 @@ class BayesNet:
 
         return new_f
 
-    def mult_factors(self, factors: List[pd.DataFrame]) -> pd.DataFrame:
+    def _mult_factors(self, factors: List[pd.DataFrame]) -> pd.DataFrame:
         """
-        :param factors: list of factor to miltiply
+        Factors the input list
+
+        :param factors: list of factor to multiply
 
         :return: a factor corresponding to the product Π(f)
         """
@@ -598,7 +659,7 @@ class BayesNet:
             X = set(f.columns.tolist()) - set(['p'])
             Z = Z | X
 
-        new_f = self.create_factor(Z, value=[1])
+        new_f = self._create_factor(Z, value=[1])
         for f1 in factors:
             new_f = new_f.merge(f1)
             new_f.new_p = new_f.new_p * new_f.p
@@ -608,10 +669,12 @@ class BayesNet:
 
         return new_f
 
-    def max_out(self, f_x: pd.DataFrame, Z: str, visited: set) -> pd.DataFrame: 
+    def _max_out(self, f_x: pd.DataFrame, Z: str, visited: set) -> pd.DataFrame: 
         """
-        :param X: a set of variables => e.g BCD
-        :param Z: a subset of variables X  => e.g D
+        Maxes out the variables Z from factor f_x
+
+        :param f_x: a factor over variables X
+        :param Z: a subset of variables X
 
         :return: a factor corresponding to Max_z(f)
         """
@@ -630,7 +693,7 @@ class BayesNet:
     def marginal_distrib(self, Q: List[str],  e: List[tuple[str, bool] or None], pi: List[str]) -> pd.DataFrame:
         """
         Computes the marginal distribution P(Q|e)
-        given the query variables Q and possibly empty evidence e
+        given the query variables Q, possibly empty evidence e and ordering pi
 
         :param Q: query variables
         :param e: evidence
@@ -646,20 +709,26 @@ class BayesNet:
             cpts_e.update({key: self.reduce_factor(pd.Series(dict(e)), cpts[key])})
         
         for i in range(len(pi)):
-            f_pi, fpi_keys = self.get_cpts_x(pi[i], cpts_e)
-            f_mult = self.mult_factors(f_pi)
-            f_sum = self.sum_out(f_mult, pi[i])
-            cpts_e = self.replace_cpts(cpts_e, fpi_keys, {pi[i]: f_sum})
+            f_pi, fpi_keys = self._get_cpts_x(pi[i], cpts_e)
+            f_mult = self._mult_factors(f_pi)
+            f_sum = self._sum_out(f_mult, pi[i])
+            cpts_e = self._replace_cpts(cpts_e, fpi_keys, {pi[i]: f_sum})
+
+        marginals = self._mult_factors(list(cpts_e.values()))
             
-        return self.mult_factors(list(cpts_e.values()))
+        if e:
+            prob_e = sum(marginals['p'])
+            marginals['p'] = marginals['p'] / prob_e
+
+        return marginals
 
     def map_and_mpe(self, order_function: Callable, e: List[tuple[str, bool]], M: List[str]=[]) -> pd.DataFrame:
         """
-        Computes the marginal distribution P(Q|e)
-        given the query variables Q and possibly empty evidence e
+        Computes the most likely instantiations given evidence and an ordering function (heuristic).
+        If M is empty, returns MPE, else it returns MAP
 
-        :param order_function: function for ordering parameters
-        :param M: variables in Network that we do not want to eliminate or None MPE is implement
+        :param order_function: function for ordering parameters (heuristic)
+        :param M: variables in network that we do not want to eliminate or None in case of MPE
         :param e: evidence
 
         :return: the marginal distribution of MAP_p(M, E) or MPE_p(E)
@@ -681,13 +750,13 @@ class BayesNet:
             cpts_e.update({key: self.reduce_factor(pd.Series(dict(e)), cpts[key])})
 
         for i in range(len(pi)):
-            f_pi, fpi_keys = self.get_cpts_x(pi[i], cpts_e)
-            fi = self.mult_factors(f_pi)
+            f_pi, fpi_keys = self._get_cpts_x(pi[i], cpts_e)
+            fi = self._mult_factors(f_pi)
             if pi[i] in M:
-                fi = self.max_out(fi, pi[i], set(pi[:i]))
+                fi = self._max_out(fi, pi[i], set(pi[:i]))
             else:
-                fi = self.sum_out(fi, pi[i])
+                fi = self._sum_out(fi, pi[i])
 
-            cpts_e = self.replace_cpts(cpts_e, fpi_keys, {pi[i]: fi})
+            cpts_e = self._replace_cpts(cpts_e, fpi_keys, {pi[i]: fi})
             
-        return self.mult_factors(list(cpts_e.values()))
+        return self._mult_factors(list(cpts_e.values()))
