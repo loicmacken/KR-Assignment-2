@@ -1,0 +1,11 @@
+n_nodes,degree,n_roots,max_edges,min_edges,n_evidence,time,result
+5,4,2,3,1,2,1.9169862270355225,"      4         p instantiations
+0  True  0.132038               "
+15,7,2,3,1,6,3.367733955383301,"     11         p instantiations
+0  True  0.045949               "
+25,11,2,3,1,10,5.6734089851379395,"     17             p instantiations
+0  True  7.537207e-07               "
+35,16,2,3,1,14,23.57942485809326,"     11             p instantiations
+0  True  3.127975e-09               "
+45,14,2,3,1,18,153.82390475273132,"      5             p instantiations
+0  True  7.330583e-09               "
