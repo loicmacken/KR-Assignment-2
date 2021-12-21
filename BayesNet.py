@@ -663,13 +663,9 @@ class BayesNet:
             X = set(f.columns.tolist()) - set(['p']) - set(['instantiations'])
             Z = Z | X
 
-<<<<<<< HEAD
-        new_f = self.create_factor(Z, value=[1])
+        new_f = self._create_factor(Z, value=[1])
         new_f['new_instantiations'] = ' '
 
-=======
-        new_f = self._create_factor(Z, value=[1])
->>>>>>> devLoic
         for f1 in factors:
             new_f = new_f.merge(f1)
             new_f.new_p = new_f.new_p * new_f.p
@@ -779,13 +775,7 @@ class BayesNet:
             else:
                 fi = self._sum_out(fi, pi[i])
 
-<<<<<<< HEAD
             degrees_occured.append( len(set(fi.columns.values)-set(['p','instantiations'])))
-            cpts_e = self.replace_cpts(cpts_e, fpi_keys, {pi[i]: fi})
-
-        return degrees_occured, self.mult_factors(list(cpts_e.values()))
-=======
             cpts_e = self._replace_cpts(cpts_e, fpi_keys, {pi[i]: fi})
-            
-        return self._mult_factors(list(cpts_e.values()))
->>>>>>> devLoic
+
+        return degrees_occured, self._mult_factors(list(cpts_e.values()))
