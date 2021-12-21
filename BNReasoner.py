@@ -7,8 +7,8 @@ import copy
 
 
 class Heuristics(Enum):
-    MIN_ORDER='MIN_ORDER'
     MIN_FILL='MIN_FILL'
+    MIN_ORDER='MIN_ORDER'
     RANDOM='RANDOM'
 
 class BNReasoner:

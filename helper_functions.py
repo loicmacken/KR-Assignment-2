@@ -4,6 +4,7 @@ import pandas as pd
 import glob
 import os
 import csv
+import json
 
 
 # csv header
@@ -29,12 +30,9 @@ def create_lineplots(data, query, Heuristics):
 
         res.update({ 'x' + i: [], 'y' + i: [] })
         for key in data[i]:
-            print('d', i, key, data[i][key]['values'])
             if key == '45' or key == 45: continue
             res['x' + i].append(str(key))
             res['y' + i].append(np.average(data[i][key]['values']))
-
-        print('res', res)
 
         plt.plot(res['x' + i], res['y' + i], label = "%s" % i.lower(), marker='o', ms=3, color=palette(index), linewidth=1, alpha=0.9) #, color=color[int(i)-1])
 
@@ -49,6 +47,35 @@ def create_lineplots(data, query, Heuristics):
     # Display a figure.
     plt.show()
 
+def create_histchart(data, query, Heuristics, n_node):
+    # Create a color palette
+    palette = plt.get_cmap('Set1')
+    # Change the style of plot
+    plt.style.use('seaborn')
+
+    res = {} 
+    bins= set({})
+    for index, i in enumerate(list(reversed(Heuristics))): 
+        i = i.value
+
+        res.update({ 'x' + i: [], 'y' + i: [] })
+        res['x' + i] = data[i][n_node]['degrees']
+
+        bins = bins | set(np.unique(res['x' + i]))
+        plt.hist(x=res['x' + i], bins=np.unique(res['x' + i]), label = "%s" % i.lower(), facecolor=palette(index), alpha=0.25)
+
+    plt.xticks(list(bins))
+    # Set the x axis label of the current axis.
+    plt.xlabel('Tracked degrees of each order (throughout the execution)')
+    # Set the y axis label of the current axis.
+    plt.ylabel('Number of occurrences (in all 10 runs)')
+    # Set a title of the current axes.
+    plt.title('%s Query in a %s-node BN' % (query, n_node))
+    # show a legend on the plot
+    plt.legend()
+    # Display a figure.
+    plt.show()
+
 def create_barchart(data, query, Heuristics):
     # width of the bars
     barWidth = 0.3
@@ -58,25 +85,24 @@ def create_barchart(data, query, Heuristics):
     plt.style.use('seaborn')
 
     res = {} 
+    xtick = set({})
     for index, i in enumerate(Heuristics): 
         i = i.value
 
         res.update({ 'x' + i: [], 'y' + i: [] })
         for key in data[i]:
-            print('d', i, key, data[i][key]['values'])
-            if key == '45' or key == 45: continue
-            res['x' + i].append(str(key))
-            res['y' + i].append(np.average(data[i][key]['values']))
+            if key == 35 or key == 45: continue
+            res['x' + i].append(np.max(data[i][key]['degree']))
+            res['y' + i].append(np.max(data[i][key]['degrees']))
 
-        print('res', res)
-        # position = [x + index*barWidth for x in np.arange(len(res['x' + i]))]
+        position = [x + index*barWidth for x in res['x' + i]]
+        xtick = xtick | set(res['x' + i])
+        plt.bar(x=position, height=res['y' + i], data=res['x' + i], label = "%s" % i.lower(), color=palette(index), edgecolor='black', align='center', capsize=2, width=barWidth) #, color=color[int(i)-1])
 
-        plt.bar(res['x' + i], res['y' + i], label = "%s" % i.lower(), color=palette(index), edgecolor='black', align='edge', capsize=2, width=barWidth) #, color=color[int(i)-1])
-
-        
-    plt.xlabel('Number of variables (nodes)')
+    plt.xticks(list(xtick))
+    plt.xlabel('Width of BNs')
     # Set the y axis label of the current axis.
-    plt.ylabel('Time')
+    plt.ylabel('Max Degree occurred throught the runs')
     # Set a title of the current axes.
     plt.title('%s Query' % query)
     # show a legend on the plot
@@ -113,28 +139,29 @@ def combine_results(query, Heuristics):
     for heuristic in Heuristics:
         file_name = FILE_PATH + FILE_NAME_OUTPUTS +  FILE_NAME_QUERY_CSV.format(query) + FILE_NAME_METHOD_NUMBER.format(heuristic.value) + FILE_RESULTS
         csvfiles[heuristic.value] = glob.glob(file_name)
-        print('file', file_name)
 
         data.update({
             heuristic.value: {}
         })
         
-        print('method_number', csvfiles, heuristic.value, query)
         for files in csvfiles[heuristic.value]:
             df = pd.read_csv(files)
-            # print(df)
-            # data[heuristic.value].update(df)
             for _, row in df.iterrows():
+                list = json.loads(row['degrees_occurred'])
                 if row['n_nodes'] in data[heuristic.value] and 'values' in data[heuristic.value][row['n_nodes']]:
                     data[heuristic.value].update({
                         row['n_nodes']: {
-                            'values': (data[heuristic.value][row['n_nodes']]['values']) + [float(row['time'])], # max fitness values
+                            'values': (data[heuristic.value][row['n_nodes']]['values']) + [float(row['time'])],
+                            'degrees': (data[heuristic.value][row['n_nodes']]['degrees']) + list,
+                            'degree': (data[heuristic.value][row['n_nodes']]['values']) + [int(row['degree'])]
                         }
                     })
                 else:
                     data[heuristic.value].update({
                         row['n_nodes']: {
-                            'values': [float(row['time'])], # max fitness values
+                            'values': [float(row['time'])],
+                            'degrees': list,
+                            'degree': [int(row['degree'])]
                         }
                     })
 

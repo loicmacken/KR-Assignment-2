@@ -49,7 +49,6 @@ def run_experiment():
                 e.append((evidence, True))
 
             for method in Heuristics:
-                print(method)
 
                 # mpe and map
                 for query in Queries:
@@ -68,8 +67,17 @@ def run_experiment():
 
 def create_experiment_graphs(query):
     data = helpers.combine_results(query, Heuristics)
+
+    # lineplot time-number of variables
     helpers.create_lineplots(data, query, Heuristics)
-    helpers.create_barchart(data, query, Heuristics)
+
+    # barcharts od width-degrees occurred
+    # helpers.create_barchart(data, query, Heuristics)
+
+    # histograms for tracked degrees
+    helpers.create_histchart(data, query, Heuristics, 5)
+    helpers.create_histchart(data, query, Heuristics, 25)
+    helpers.create_histchart(data, query, Heuristics, 45)
 
 
 if __name__ =='__main__':
