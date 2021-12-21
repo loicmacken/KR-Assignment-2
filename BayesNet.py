@@ -580,9 +580,10 @@ class BayesNet:
 
         :return: a factor corresponding to Σ_z(f)
         """
-        X = set(f_x.columns.tolist()) - set(['p'])
+        X = set(f_x.columns.tolist()) - set(['p']) - set(['instantiations'])
         Y = X - set([Z]) # e.g BC
-        
+        #TODO check len(Y)>0
+        # print('sum', f_x)
         new_f: pd.DataFrame = f_x.groupby(list(Y), as_index = False)['p'].sum()
 
         return new_f
@@ -593,17 +594,26 @@ class BayesNet:
 
         :return: a factor corresponding to the product Π(f)
         """
+        if len(factors) == 1:
+            return factors[0]
+
         Z = set()
         for f in factors:
-            X = set(f.columns.tolist()) - set(['p'])
+            X = set(f.columns.tolist()) - set(['p']) - set(['instantiations'])
             Z = Z | X
 
         new_f = self.create_factor(Z, value=[1])
+        new_f['new_instantiations'] = ' '
+
         for f1 in factors:
             new_f = new_f.merge(f1)
             new_f.new_p = new_f.new_p * new_f.p
             new_f.drop('p', axis=1, inplace=True)
+            if 'instantiations' in f1.columns:
+                new_f['new_instantiations'] = new_f['instantiations'].astype(str) + new_f['new_instantiations']
+                new_f.drop('instantiations', axis=1, inplace=True)
 
+        new_f.rename(columns={'new_instantiations':'instantiations'}, inplace=True)
         new_f.rename(columns={'new_p':'p'}, inplace=True)
 
         return new_f
@@ -615,15 +625,21 @@ class BayesNet:
 
         :return: a factor corresponding to Max_z(f)
         """
-        X = set(f_x.columns.tolist()) - set(['p'])
-        Y = X - set([Z]) - visited # e.g BC
+        X = set(f_x.columns.tolist()) - set(['p']) - set(['instantiations'])
+        Y = X - set([Z]) # e.g BC
         new_f = pd.DataFrame()
+        if 'instantiations' not in f_x.columns: f_x['instantiations'] = ''
 
         if len(Y) > 0:
-            new_f: pd.DataFrame = f_x.loc[f_x.reset_index().groupby(list(Y))['p'].idxmax()]
+            new_f: pd.DataFrame = f_x.loc[f_x.groupby(list(Y))['p'].idxmax()]
+            new_f['instantiations'] = Z + '=' + new_f[Z].astype(str) + ',' + f_x['instantiations']
+            new_f.drop(Z, axis=1, inplace=True)
         else:
+            #TODO pick the highest value
             max = f_x['p'].max()
             new_f: pd.DataFrame = f_x[f_x['p'] == max]
+            new_f['instantiations'] = Z + '=' + new_f[Z].astype(str) + ',' + f_x['instantiations']
+            new_f.drop(Z, axis=1, inplace=True)
 
         return new_f
 
@@ -638,6 +654,7 @@ class BayesNet:
 
         :return: the marginal distribution of P(Q, E)
         """
+        #TODO normalize by evidence
         cpts = self.get_all_cpts()
         cpts_e = {}
         f_sum = pd.DataFrame()
@@ -653,7 +670,7 @@ class BayesNet:
             
         return self.mult_factors(list(cpts_e.values()))
 
-    def map_and_mpe(self, order_function: Callable, e: List[tuple[str, bool]], M: List[str]=[]) -> pd.DataFrame:
+    def map_and_mpe(self, order_function: Callable, e: List[tuple[str, bool]], M: List[str]=[]) -> tuple[List, pd.DataFrame]:
         """
         Computes the marginal distribution P(Q|e)
         given the query variables Q and possibly empty evidence e
@@ -665,6 +682,7 @@ class BayesNet:
         :return: the marginal distribution of MAP_p(M, E) or MPE_p(E)
         """
         Q = self.get_all_variables()
+        degrees_occured = []
 
         if len(M) == 0:
             M = Q
@@ -688,6 +706,7 @@ class BayesNet:
             else:
                 fi = self.sum_out(fi, pi[i])
 
+            degrees_occured.append( len(set(fi.columns.values)-set(['p','instantiations'])))
             cpts_e = self.replace_cpts(cpts_e, fpi_keys, {pi[i]: fi})
-            
-        return self.mult_factors(list(cpts_e.values()))
+
+        return degrees_occured, self.mult_factors(list(cpts_e.values()))
