@@ -716,7 +716,7 @@ class BayesNet:
         :param e: evidence
         :param pi: ordering of network variables not in Q
 
-        :return: the marginal distribution of P(Q, E)
+        :return: the marginal distribution of P(Q, E) normalized by the E or P(Q) if E is empty
         """
         cpts = self.get_all_cpts()
         cpts_e = {}

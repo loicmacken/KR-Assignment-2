@@ -81,21 +81,7 @@ def create_experiment_graphs(query):
 
 
 if __name__ =='__main__':
-    # run_experiment()
+    run_experiment()
+    # create graphs 
     create_experiment_graphs(Queries.MPE.value)
     create_experiment_graphs(Queries.MAP.value)
-
-
-# def task_2() -> None:
-#     directory = "./test_data/task_2"
-
-#     for filename in os.listdir(directory):
-#         if filename.endswith("101.xml"): 
-#             # print(os.path.join(directory, filename))
-#             file = os.path.join(directory, filename)
-#             bn =  BNReasoner(file)
-#             print(file)
-#             print(bn.map_and_mpe(order_function=Heuristics.MIN_ORDER, e=[('node1', False), ('node10', True)]))
-#             continue
-#         else:
-#             continue
