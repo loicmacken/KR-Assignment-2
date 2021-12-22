@@ -215,10 +215,6 @@
                 ]
             ],
             [
-                "hear-bark",
-                "dog-out"
-            ],
-            [
                 0.09,
                 0.06,
                 0.043,
@@ -233,10 +229,6 @@
             ],
             [],
             [
-                "bowel-problem",
-                "hear-bark"
-            ],
-            [
                 0.087,
                 0.058,
                 0.013,
@@ -249,6 +241,68 @@
         ]
     ],
     "map_and_mpe": [
-        []
+        [
+            [
+                [
+                    "bowel-problem",
+                    false
+                ]
+            ],
+            [
+                "family-out",
+                "light-on"
+            ],
+            [
+                0.807
+            ],
+            [
+                [
+                    "light-on",
+                    true
+                ],
+                [
+                    "family-out",
+                    true
+                ]
+            ]
+        ],
+        [
+            [
+                [
+                    "hear-bark",
+                    false
+                ],
+                [
+                    "bowel-problem",
+                    true
+                ]
+            ],
+            [],
+            [
+                0.168
+            ],
+            [
+                [
+                    "family-out",
+                    true
+                ],
+                [
+                    "dog-out",
+                    false
+                ],
+                [
+                    "bowel-problem",
+                    true
+                ],
+                [
+                    "hear-bark",
+                    false
+                ],
+                [
+                    "light-on",
+                    true
+                ]
+            ]
+        ]
     ]
 }

@@ -100,19 +100,40 @@ def write_dog_problem():
                 [
                     [B, True]
                 ],
-                [H, D],
                 [0.090, 0.060, 0.043, 0.807]
             ],
             [
                 [F, L, D],
                 [],
-                [B, H],
                 [0.087, 0.058, 0.013, 0.247, 0.003, 0.002, 0.029, 0.560]
             ]
         ],
         map_mpe: [
             [
-
+                [
+                    [B, False]
+                ],
+                [F, L],
+                [0.807],
+                [
+                    [L, True],
+                    [F, True]
+                ]
+            ],
+            [
+                [
+                    [H, False],
+                    [B, True]
+                ],
+                [],
+                [0.168],
+                [
+                    [F, True],
+                    [D, False],
+                    [B, True],
+                    [H, False],
+                    [L, True]
+                ]
             ]
         ]
     }
@@ -209,24 +230,47 @@ def write_lecture_example():
         ],
         mar_dist: [
             [
-                [W, R],
-                [
-                    [P, True],
-                    [S, False]
-                ],
                 [G],
-                [0.814, 0.072, 0.027, 0.087]
+                [
+                    [W, True],
+                    [R, False]
+                ],
+                [0.82, 0.18]
             ],
             [
                 [P, R, G],
                 [],
-                [S, W],
                 [0.186, 0.000, 0.029, 0.265, 0.079, 0.315, 0.006, 0.120]
             ]
         ],
         map_mpe: [
             [
-                
+                [
+                    [W, True],
+                    [P, False]
+                ],
+                [G, S],
+                [0.215],
+                [
+                    [G, True],
+                    [S, True]
+                ]
+            ],
+            [
+                [
+                    [P, False], 
+                    [R, True], 
+                    [G, False]
+                ],
+                [],
+                [0.054],
+                [
+                    [G, False],
+                    [R, True],
+                    [P, False],
+                    [W, True],
+                    [S, True]
+                ]
             ]
         ]
     }
@@ -327,19 +371,42 @@ def write_lecture_example2():
                     [Y, True],
                     [O, False]
                 ],
-                [X],
                 [0.495, 0.495, 0.005, 0.005]
             ],
             [
                 [J, Y, O],
                 [],
-                [I, X],
                 [0.005, 0.000, 0.010, 0.485, 0.247, 0.247, 0.000, 0.005]
             ]
         ],
         map_mpe: [
             [
-                
+                [
+                    [Y, False],
+                    [O, False]
+                ],
+                [I, X],
+                [0.233],
+                [
+                    [X, False],
+                    [I, False]
+                ]
+            ],
+            [
+                [
+                    [J, False], 
+                    [Y, False], 
+                    [O, True]
+                ],
+                [],
+                [0.000],
+                [
+                    [O, True],
+                    [X, True],
+                    [Y, False],
+                    [J, False],
+                    [I, False]
+                ]
             ]
         ]
     }

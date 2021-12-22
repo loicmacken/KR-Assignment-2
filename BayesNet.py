@@ -82,7 +82,6 @@ class BayesNet:
             # find degree
             if len(neighbors[node]) > degree:
                 degree = len(neighbors[node])
-            # print(neighbors, degree)
             vars.append(node)
 
             worlds = [list(i) for i in itertools.product([False, True], repeat=len(vars))]
@@ -641,8 +640,10 @@ class BayesNet:
         """
         X = set(f_x.columns.tolist()) - set(['p']) - set(['instantiations'])
         Y = X - set([Z]) # e.g BC
-        #TODO check len(Y)>0
-        # print('sum', f_x)
+
+        # check if there are any variables left, if not, return an empty frame
+        if not Y: return pd.DataFrame()
+
         new_f: pd.DataFrame = f_x.groupby(list(Y), as_index = False)['p'].sum()
 
         return new_f
@@ -717,7 +718,6 @@ class BayesNet:
 
         :return: the marginal distribution of P(Q, E)
         """
-        #TODO normalize by evidence
         cpts = self.get_all_cpts()
         cpts_e = {}
         f_sum = pd.DataFrame()
@@ -760,7 +760,6 @@ class BayesNet:
         Q = self.get_all_variables()
         
         pi = order_function(list(set(Q) - set(M))) + order_function(M)
-        print(pi, 'pi', len(pi))
         cpts = self.get_all_cpts()
         cpts_e = {}
 
@@ -774,8 +773,13 @@ class BayesNet:
                 fi = self._max_out(fi, pi[i], set(pi[:i]))
             else:
                 fi = self._sum_out(fi, pi[i])
+            if fi.empty:
+                degrees_occured.append(0)
+                cpts_e = self._replace_cpts(cpts_e, fpi_keys, {})
+                continue
 
-            degrees_occured.append( len(set(fi.columns.values)-set(['p','instantiations'])))
+
+            degrees_occured.append(len(set(fi.columns.values)-set(['p','instantiations'])))
             cpts_e = self._replace_cpts(cpts_e, fpi_keys, {pi[i]: fi})
 
         return degrees_occured, self._mult_factors(list(cpts_e.values()))

@@ -204,27 +204,21 @@
     "marginal_distrib": [
         [
             [
-                "Winter?",
-                "Rain?"
+                "Wet Grass?"
             ],
             [
                 [
-                    "Sprinkler?",
+                    "Winter?",
                     true
                 ],
                 [
-                    "Slippery Road?",
+                    "Rain?",
                     false
                 ]
             ],
             [
-                "Wet Grass?"
-            ],
-            [
-                0.814,
-                0.072,
-                0.027,
-                0.087
+                0.82,
+                0.18
             ]
         ],
         [
@@ -234,10 +228,6 @@
                 "Wet Grass?"
             ],
             [],
-            [
-                "Slippery Road?",
-                "Winter?"
-            ],
             [
                 0.186,
                 0.0,
@@ -251,6 +241,76 @@
         ]
     ],
     "map_and_mpe": [
-        []
+        [
+            [
+                [
+                    "Winter?",
+                    true
+                ],
+                [
+                    "Sprinkler?",
+                    false
+                ]
+            ],
+            [
+                "Wet Grass?",
+                "Slippery Road?"
+            ],
+            [
+                0.215
+            ],
+            [
+                [
+                    "Wet Grass?",
+                    true
+                ],
+                [
+                    "Slippery Road?",
+                    true
+                ]
+            ]
+        ],
+        [
+            [
+                [
+                    "Sprinkler?",
+                    false
+                ],
+                [
+                    "Rain?",
+                    true
+                ],
+                [
+                    "Wet Grass?",
+                    false
+                ]
+            ],
+            [],
+            [
+                0.054
+            ],
+            [
+                [
+                    "Wet Grass?",
+                    false
+                ],
+                [
+                    "Rain?",
+                    true
+                ],
+                [
+                    "Sprinkler?",
+                    false
+                ],
+                [
+                    "Winter?",
+                    true
+                ],
+                [
+                    "Slippery Road?",
+                    true
+                ]
+            ]
+        ]
     ]
 }
