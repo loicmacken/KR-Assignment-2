@@ -1,0 +1,8 @@
+\section{Conclusions and Discussion}
+
+We created a Bayesian Network Reasoner by combining the algorithms d-separation, ordering, network prunning, marginal distributions, MAP, and MPE. The experiment, which tested the average performance of the MAP and MPE algorithms with three different elimination orders, the random order, the min-order, and the min-fill heuristics, revealed that the two heuristics outperformed the random heuristic significantly. \\
+The reasoner with the heuristics was used to test our use case based on the correlation between OS and CHD. We tested it for five different queries. According to the prior marginal query, females are more likely than males to be tested positively and negatively for CHD. This could be because females are more likely to report symptoms to their doctor.
+The posterior marginal query revealed that if a person is a heavy smoker and has a high job demand, he or she is more likely not to develop coronary heart disease than to develop it. This runs counter to our hypothesis.
+According to the MPE query, the most likely instantiation of a person with high cholesterol and hypertension is someone who scores true on almost all the risk variables which is representative of our prediction.
+When there is occupational strain and limited social opportunities, the MAP suggests that is most likely to be a man with an active job type.
+Given the evidence of both occupational strain and mobbing being true, the d-separation indicated true is independent of gender and job type.

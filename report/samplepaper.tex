@@ -1,0 +1,97 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage{graphicx}
+\usepackage{float}
+
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\begin{document}
+%
+\title{Occupational Strain and Coronary Heart Disease: a Bayesian Network Analysis}
+\titlerunning{Occupational Strain and Coronary Heart Disease: a BN Analysis}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Vrije Universiteit Amsterdam, De Boelelaan 1105, 1081 HV Amsterdam,\\ The Netherlands}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+%A Bayesian Network (BN) is a probabilistic graphical model for representing dependencies and conditional independencies of given propositional variables that belong to a specif domain. 
+%In the current paper we will discuss the implementation of a BN Reasoner, which contains a set of functionalities to test the network, with different heuristics and given the following problem statement: given the correlation between occupational strain, work-related stress, and coronary heart disease, which variables come into play to affect the correlation? 
+A Bayesian Network (BN) is a tool for representing probabilities of events and their interaction. In this paper, we present a BN Reasoner that contains functionality to query information from a BN and we assess the performance of different ordering heuristics in variable elimination. The minimum degree and minimum fill heuristics both performed similarly and significantly outperformed random ordering. 
+Then we consider the use case of investigating the correlation between occupational strain, work-related stress, and coronary heart disease (CHD), by modelling their probabilities and interactions through a BN. This network is then queried and the results are compared with insights from medical research. We found that if a person is a heavy smoker and has a high job demand, he or she is more likely not to develop CHD than to develop it. Furthermore, the most likely instantiation of a person with high cholesterol and hypertension is someone who is also male, and scores true on all risk variables apart from the occupational strain (OS). When there is OS and limited social opportunities, our findings suggest that it is most likely to be a man with an active job type (JT). Given the evidence of both OS and Mobbing, the d-separation indicated true is independent of gender and JT.
+
+\keywords{Bayesian Network \and Minimum degree \and Minimum fill \and Random Ordering \and Occupational Strain \and Coronary Heart Disease}
+\end{abstract}
+%
+%
+%
+\input{Chapters/Introduction}
+\input{Chapters/Task 1 - Explanation of the algorithm}
+\input{Chapters/Task 2 - Testing}
+\input{Chapters/Task 3 - Use Case} 
+\input{Chapters/Conclusion and Discussion}
+
+
+%
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+% \bibliographystyle{splncs04}
+% \bibliography{mybibliography}
+%
+
+\begin{thebibliography}{8}
+
+
+\bibitem{ref_article1}
+Guan, S., Xiaerfuding, X., Ning, L., Lian, Y., Jiang, Y., Liu, J., & Ng, T. (2017). Effect of Job Strain on Job Burnout, Mental Fatigue and Chronic Diseases among Civil Servants in the Xinjiang Uygur Autonomous Region of China. International Journal of Environmental Research and Public Health, 14(8), 872. \doi{https://doi.org/10.3390/ijerph14080872}
+
+\bibitem{ref_article2}
+Johnson, J. V., Hall, E. M., & Theorell, T. (1989). Combined effects of job strain and social isolation on cardiovascular disease morbidity and mortality in a random sample of the Swedish male working population. Scandinavian Journal of Work, Environment & Health, 15(4), 271–279. \doi{https://doi.org/10.5271/sjweh.1852}
+
+\bibitem{ref_article3}
+Kouvonen, A., KivimaKi, M., Vaananen, A., Heponiemi, T., Elovainio, M., Ala-Mursula, L., Virtanen, M., Pentti, J., Linna, A., & Vahtera, J. (2007). Job Strain and Adverse Health Behaviors: The Finnish Public Sector Study. Journal of Occupational and Environmental Medicine, 49(1), 68–74. \doi{https://doi.org/10.1097/jom.0b013e31802db54a}
+
+\bibitem{ref_article4}
+Kuper, H. (2003). Job strain, job demands, decision latitude, and risk of coronary heart disease within the Whitehall II study. Journal of Epidemiology & Community Health, 57(2), 147–153. \doi{https://doi.org/10.1136/jech.57.2.147}
+
+\bibitem{ref_article5}
+Landsbergis, P. A., Schnall, P. L., Deitz, D., Friedman, R., & Pickering, T. (1992). The patterning of psychological attributes and distress by ?job strain? and social support in a sample of working men. Journal of Behavioral Medicine, 15(4), 379–405. \doi{https://doi.org/10.1007/bf00844730}
+
+\bibitem{ref_article6}
+Sara, J. D., Prasad, M., Eleid, M. F., Zhang, M., Widmer, R. J., & Lerman, A. (2018). Association Between Work‐Related Stress and Coronary Heart Disease: A Review of Prospective Studies Through the Job Strain, Effort‐Reward Balance, and Organizational Justice Models. Journal of the American Heart Association, 7(9). https://doi.org/10.1161/jaha.117.008073
+
+\bibitem{ref_article7}
+Theorell, T., Hammarström, A., Gustafsson, P. E., Magnusson Hanson, L., Janlert, U., & Westerlund, H. (2013). Job strain and depressive symptoms in men and women: a prospective study of the working population in Sweden. Journal of Epidemiology and Community Health, 68(1), 78–82. \doi{https://doi.org/10.1136/jech-2012-202294}
+
+\bibitem{ref_article8}
+Ziegler, R. G., Mayne, S. T., & Swanson, C. A. (1996). Nutrition and lung cancer. Cancer Causes and Control, 7(1), 157–177. \doi{https://doi.org/10.1007/bf00115646}
+\end{thebibliography}
+
+\newpage
+\input{Chapters/Appendix}
+
+
+
+\end{document}
+
+
