@@ -76,7 +76,7 @@ def create_histchart(data, query, Heuristics, n_node):
         res['x' + i] = data[i][n_node]['degrees']
 
         bins = bins | set(np.unique(res['x' + i]))
-        plt.hist(x=res['x' + i], bins=np.unique(res['x' + i]), label = "%s" % i.lower(), facecolor=palette(index), alpha=0.25)
+        plt.hist(x=res['x' + i], bins=np.unique(res['x' + i]), label = "%s" % i.lower(), facecolor=palette(index), alpha=0.35)
 
     plt.xticks(list(bins))
     # Set the x axis label of the current axis.
